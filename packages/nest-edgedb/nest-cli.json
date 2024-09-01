@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "nest-edgedb": {
+      "type": "library",
+      "root": "src",
+      "entryFile": "index",
+      "sourceRoot": "libs/nest-edgedb/src",
+      "compilerOptions": {
+        "tsConfigPath": "nest-edgedb/tsconfig.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}

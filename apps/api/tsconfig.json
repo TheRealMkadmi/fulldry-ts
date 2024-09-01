@@ -1,0 +1,41 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "strict": true,
+    "declaration": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2023",
+    "sourceMap": false,
+    "outDir": "./dist",
+    "preserveSymlinks": true,
+    "preserveConstEnums": true,
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "lib": [
+      "ES2023",
+    ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "exclude": [
+      "node_modules",
+      "dist",
+    ],
+    "@/*": [
+      "src/app/*"
+    ],
+    "@db/*": [
+      "dbschema/edgeql-js/*"
+    ]
+  }
+}

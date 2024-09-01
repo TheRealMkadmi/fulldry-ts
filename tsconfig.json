@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "nest-edgedb": ["packages/nest-edgedb/src/index.ts"]
+    }
+  }
+}
