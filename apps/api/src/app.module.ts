@@ -11,7 +11,8 @@ import { PetsModule } from './app/pets/pets.module';
     }),
     EdgeDBModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({
-        dsn: configService.get<string>('EDGE_DB_DSN'),
+        instanceName: configService.get<string>('EDGEDB_INSTANCE'),
+        secretKey: configService.get<string>('EDGEDB_SECRET_KEY'),
       }),
       inject: [ConfigService],
     }),

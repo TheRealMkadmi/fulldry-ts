@@ -1,6 +1,7 @@
 {
-  "name": "wooden-spade",
+  "name": "fulldry-ts",
   "devDependencies": {
+    "dotenv-cli": "^7.4.2",
     "prettier": "^3.2.5",
     "turbo": "^2.0.14",
     "typescript": "^5.4.5"
@@ -11,8 +12,8 @@
   "packageManager": "bun@1.1.21",
   "private": true,
   "scripts": {
-    "dev": "turbo dev",
-    "dev:api": "turbo run dev --filter api",
+    "dev": "dotenv -- turbo dev",
+    "dev:api": "dotenv -- turbo run dev --filter api",
     "build": "turbo build",
     "debug": "turbo dev:debug",
     "lint": "turbo lint",
