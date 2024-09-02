@@ -1,10 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="build nest-edgedb" type="js.build_tools.npm">
-    <package-json value="$PROJECT_DIR$/packages/nest-edgedb/package.json" />
+  <configuration default="false" name="turbo build nest-edgedb" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/package.json" />
     <command value="run" />
     <scripts>
       <script value="build" />
     </scripts>
+    <arguments value="--filter=nest-edgedb" />
     <node-interpreter value="project" />
     <envs />
     <method v="2" />
