@@ -15,6 +15,7 @@
     "dev": "dotenv -- turbo dev",
     "dev:api": "dotenv -- turbo run dev --filter api",
     "build": "turbo build",
+    "build:libs": "turbo build --filter=nest-edgedb --filter=interface-to-class",
     "debug": "turbo dev:debug",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

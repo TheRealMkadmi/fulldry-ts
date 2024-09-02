@@ -79,6 +79,207 @@ export namespace $default {
   }
 }
 export type Pet = $default.Pet;
+export namespace ext {
+  export namespace ai {
+    export interface Model extends std.$Object {}
+    export interface TextGenerationModel extends Model {}
+    export interface AnthropicClaude3HaikuModel extends TextGenerationModel {}
+    export interface AnthropicClaude3OpusModel extends TextGenerationModel {}
+    export interface AnthropicClaude3SonnetModel extends TextGenerationModel {}
+    export interface ProviderConfig extends cfg.ConfigObject {
+      "name": string;
+      "display_name": string;
+      "api_url": string;
+      "client_id"?: string | null;
+      "secret": string;
+      "api_style": ProviderAPIStyle;
+    }
+    export interface AnthropicProviderConfig extends ProviderConfig {
+      "name": string;
+      "display_name": string;
+      "api_url": string;
+      "api_style": ProviderAPIStyle;
+    }
+    export type ChatParticipantRole = "System" | "User" | "Assistant" | "Tool";
+    export interface ChatPrompt extends std.$Object {
+      "name": string;
+      "messages": ChatPromptMessage[];
+    }
+    export interface ChatPromptMessage extends std.$Object {
+      "participant_role": ChatParticipantRole;
+      "participant_name"?: string | null;
+      "content": string;
+    }
+    export interface Config extends cfg.ExtensionConfig {
+      "indexer_naptime": edgedb.Duration;
+      "providers": ProviderConfig[];
+    }
+    export interface CustomProviderConfig extends ProviderConfig {
+      "display_name": string;
+      "api_style": ProviderAPIStyle;
+    }
+    export type DistanceFunction = "Cosine" | "InnerProduct" | "L2";
+    export interface EmbeddingModel extends Model {}
+    export type IndexType = "HNSW";
+    export interface MistralEmbedModel extends EmbeddingModel {}
+    export interface MistralLargeModel extends TextGenerationModel {}
+    export interface MistralMediumModel extends TextGenerationModel {}
+    export interface MistralProviderConfig extends ProviderConfig {
+      "name": string;
+      "display_name": string;
+      "api_url": string;
+      "api_style": ProviderAPIStyle;
+    }
+    export interface MistralSmallModel extends TextGenerationModel {}
+    export interface OpenAIGPT_3_5_TurboModel extends TextGenerationModel {}
+    export interface OpenAIGPT_4_TurboModel extends TextGenerationModel {}
+    export interface OpenAIProviderConfig extends ProviderConfig {
+      "name": string;
+      "display_name": string;
+      "api_url": string;
+      "api_style": ProviderAPIStyle;
+    }
+    export interface OpenAITextEmbedding3LargeModel extends EmbeddingModel {}
+    export interface OpenAITextEmbedding3SmallModel extends EmbeddingModel {}
+    export interface OpenAITextEmbeddingAda002Model extends EmbeddingModel {}
+    export type ProviderAPIStyle = "OpenAI" | "Anthropic";
+  }
+  export namespace auth {
+    export interface ProviderConfig extends cfg.ConfigObject {
+      "name": string;
+    }
+    export interface OAuthProviderConfig extends ProviderConfig {
+      "name": string;
+      "secret": string;
+      "client_id": string;
+      "display_name": string;
+      "additional_scope"?: string | null;
+    }
+    export interface AppleOAuthProvider extends OAuthProviderConfig {
+      "name": string;
+      "display_name": string;
+    }
+    export interface Auditable extends std.$Object {
+      "created_at": Date;
+      "modified_at": Date;
+    }
+    export interface AuthConfig extends cfg.ExtensionConfig {
+      "providers": ProviderConfig[];
+      "ui"?: UIConfig | null;
+      "app_name"?: string | null;
+      "logo_url"?: string | null;
+      "dark_logo_url"?: string | null;
+      "brand_color"?: string | null;
+      "auth_signing_key"?: string | null;
+      "token_time_to_live"?: edgedb.Duration | null;
+      "allowed_redirect_urls": string[];
+    }
+    export interface AzureOAuthProvider extends OAuthProviderConfig {
+      "name": string;
+      "display_name": string;
+    }
+    export interface Identity extends Auditable {
+      "issuer": string;
+      "subject": string;
+    }
+    export interface ClientTokenIdentity extends Identity {}
+    export interface DiscordOAuthProvider extends OAuthProviderConfig {
+      "name": string;
+      "display_name": string;
+    }
+    export interface Factor extends Auditable {
+      "identity": LocalIdentity;
+    }
+    export interface EmailFactor extends Factor {
+      "email": string;
+      "verified_at"?: Date | null;
+    }
+    export interface EmailPasswordFactor extends EmailFactor {
+      "email": string;
+      "password_hash": string;
+    }
+    export interface EmailPasswordProviderConfig extends ProviderConfig {
+      "name": string;
+      "require_verification": boolean;
+    }
+    export type FlowType = "PKCE" | "Implicit";
+    export interface GitHubOAuthProvider extends OAuthProviderConfig {
+      "name": string;
+      "display_name": string;
+    }
+    export interface GoogleOAuthProvider extends OAuthProviderConfig {
+      "name": string;
+      "display_name": string;
+    }
+    export type JWTAlgo = "RS256" | "HS256";
+    export interface LocalIdentity extends Identity {
+      "subject": string;
+    }
+    export interface MagicLinkFactor extends EmailFactor {
+      "email": string;
+    }
+    export interface MagicLinkProviderConfig extends ProviderConfig {
+      "name": string;
+      "token_time_to_live": edgedb.Duration;
+    }
+    export interface PKCEChallenge extends Auditable {
+      "challenge": string;
+      "auth_token"?: string | null;
+      "refresh_token"?: string | null;
+      "identity"?: Identity | null;
+    }
+    export interface SMTPConfig extends cfg.ExtensionConfig {
+      "sender"?: string | null;
+      "host"?: string | null;
+      "port"?: number | null;
+      "username"?: string | null;
+      "password"?: string | null;
+      "security": SMTPSecurity;
+      "validate_certs": boolean;
+      "timeout_per_email": edgedb.Duration;
+      "timeout_per_attempt": edgedb.Duration;
+    }
+    export type SMTPSecurity = "PlainText" | "TLS" | "STARTTLS" | "STARTTLSOrPlainText";
+    export interface SlackOAuthProvider extends OAuthProviderConfig {
+      "name": string;
+      "display_name": string;
+    }
+    export interface UIConfig extends cfg.ConfigObject {
+      "redirect_to": string;
+      "redirect_to_on_signup"?: string | null;
+      "flow_type": FlowType;
+      "app_name"?: string | null;
+      "logo_url"?: string | null;
+      "dark_logo_url"?: string | null;
+      "brand_color"?: string | null;
+    }
+    export interface WebAuthnAuthenticationChallenge extends Auditable {
+      "challenge": Uint8Array;
+      "factors": WebAuthnFactor[];
+    }
+    export interface WebAuthnFactor extends EmailFactor {
+      "user_handle": Uint8Array;
+      "credential_id": Uint8Array;
+      "public_key": Uint8Array;
+    }
+    export interface WebAuthnProviderConfig extends ProviderConfig {
+      "name": string;
+      "relying_party_origin": string;
+      "require_verification": boolean;
+    }
+    export interface WebAuthnRegistrationChallenge extends Auditable {
+      "challenge": Uint8Array;
+      "email": string;
+      "user_handle": Uint8Array;
+    }
+  }
+  export namespace pgvector {
+    export interface Config extends cfg.ExtensionConfig {
+      "probes": number;
+      "ef_search": number;
+    }
+  }
+}
 export namespace fts {
   export type ElasticLanguage = "ara" | "bul" | "cat" | "ces" | "ckb" | "dan" | "deu" | "ell" | "eng" | "eus" | "fas" | "fin" | "fra" | "gle" | "glg" | "hin" | "hun" | "hye" | "ind" | "ita" | "lav" | "nld" | "nor" | "por" | "ron" | "rus" | "spa" | "swe" | "tha" | "tur" | "zho" | "edb_Brazilian" | "edb_ChineseJapaneseKorean";
   export type Language = "ara" | "hye" | "eus" | "cat" | "dan" | "nld" | "eng" | "fin" | "fra" | "deu" | "ell" | "hin" | "hun" | "ind" | "gle" | "ita" | "nor" | "por" | "ron" | "rus" | "spa" | "swe" | "tur";
@@ -341,6 +542,71 @@ export interface types {
   };
   "default": {
     "Pet": $default.Pet;
+  };
+  "ext": {
+    "ai": {
+      "Model": ext.ai.Model;
+      "TextGenerationModel": ext.ai.TextGenerationModel;
+      "AnthropicClaude3HaikuModel": ext.ai.AnthropicClaude3HaikuModel;
+      "AnthropicClaude3OpusModel": ext.ai.AnthropicClaude3OpusModel;
+      "AnthropicClaude3SonnetModel": ext.ai.AnthropicClaude3SonnetModel;
+      "ProviderConfig": ext.ai.ProviderConfig;
+      "AnthropicProviderConfig": ext.ai.AnthropicProviderConfig;
+      "ChatParticipantRole": ext.ai.ChatParticipantRole;
+      "ChatPrompt": ext.ai.ChatPrompt;
+      "ChatPromptMessage": ext.ai.ChatPromptMessage;
+      "Config": ext.ai.Config;
+      "CustomProviderConfig": ext.ai.CustomProviderConfig;
+      "DistanceFunction": ext.ai.DistanceFunction;
+      "EmbeddingModel": ext.ai.EmbeddingModel;
+      "IndexType": ext.ai.IndexType;
+      "MistralEmbedModel": ext.ai.MistralEmbedModel;
+      "MistralLargeModel": ext.ai.MistralLargeModel;
+      "MistralMediumModel": ext.ai.MistralMediumModel;
+      "MistralProviderConfig": ext.ai.MistralProviderConfig;
+      "MistralSmallModel": ext.ai.MistralSmallModel;
+      "OpenAIGPT_3_5_TurboModel": ext.ai.OpenAIGPT_3_5_TurboModel;
+      "OpenAIGPT_4_TurboModel": ext.ai.OpenAIGPT_4_TurboModel;
+      "OpenAIProviderConfig": ext.ai.OpenAIProviderConfig;
+      "OpenAITextEmbedding3LargeModel": ext.ai.OpenAITextEmbedding3LargeModel;
+      "OpenAITextEmbedding3SmallModel": ext.ai.OpenAITextEmbedding3SmallModel;
+      "OpenAITextEmbeddingAda002Model": ext.ai.OpenAITextEmbeddingAda002Model;
+      "ProviderAPIStyle": ext.ai.ProviderAPIStyle;
+    };
+    "auth": {
+      "ProviderConfig": ext.auth.ProviderConfig;
+      "OAuthProviderConfig": ext.auth.OAuthProviderConfig;
+      "AppleOAuthProvider": ext.auth.AppleOAuthProvider;
+      "Auditable": ext.auth.Auditable;
+      "AuthConfig": ext.auth.AuthConfig;
+      "AzureOAuthProvider": ext.auth.AzureOAuthProvider;
+      "Identity": ext.auth.Identity;
+      "ClientTokenIdentity": ext.auth.ClientTokenIdentity;
+      "DiscordOAuthProvider": ext.auth.DiscordOAuthProvider;
+      "Factor": ext.auth.Factor;
+      "EmailFactor": ext.auth.EmailFactor;
+      "EmailPasswordFactor": ext.auth.EmailPasswordFactor;
+      "EmailPasswordProviderConfig": ext.auth.EmailPasswordProviderConfig;
+      "FlowType": ext.auth.FlowType;
+      "GitHubOAuthProvider": ext.auth.GitHubOAuthProvider;
+      "GoogleOAuthProvider": ext.auth.GoogleOAuthProvider;
+      "JWTAlgo": ext.auth.JWTAlgo;
+      "LocalIdentity": ext.auth.LocalIdentity;
+      "MagicLinkFactor": ext.auth.MagicLinkFactor;
+      "MagicLinkProviderConfig": ext.auth.MagicLinkProviderConfig;
+      "PKCEChallenge": ext.auth.PKCEChallenge;
+      "SMTPConfig": ext.auth.SMTPConfig;
+      "SMTPSecurity": ext.auth.SMTPSecurity;
+      "SlackOAuthProvider": ext.auth.SlackOAuthProvider;
+      "UIConfig": ext.auth.UIConfig;
+      "WebAuthnAuthenticationChallenge": ext.auth.WebAuthnAuthenticationChallenge;
+      "WebAuthnFactor": ext.auth.WebAuthnFactor;
+      "WebAuthnProviderConfig": ext.auth.WebAuthnProviderConfig;
+      "WebAuthnRegistrationChallenge": ext.auth.WebAuthnRegistrationChallenge;
+    };
+    "pgvector": {
+      "Config": ext.pgvector.Config;
+    };
   };
   "fts": {
     "ElasticLanguage": fts.ElasticLanguage;

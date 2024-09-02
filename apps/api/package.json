@@ -9,6 +9,9 @@
     "start": "bun ./src/main.ts",
     "dev:debug": "bun --watch --inspect-brk ./src/main.ts",
     "generate:edgeql": "bunx @edgedb/generate edgeql-js",
+    "generate:interfaces": "bunx @edgedb/generate interfaces",
+    "generate:db-client": "bunx @edgedb/generate edgeql-js && bunx @edgedb/generate interfaces",
+    "generate:classes": "bunx interface-to-class-converter dbschema\\interfaces.ts dbschema\\classes.ts cfg,ext,fts,schema,sys,types,helper types",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -54,7 +57,8 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "interface-to-class-converter": "workspace:*"
   },
   "jest": {
     "moduleFileExtensions": [

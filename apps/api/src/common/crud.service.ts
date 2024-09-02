@@ -15,7 +15,7 @@ export type MakeProjection<Shape> = {
 
 @Injectable()
 export abstract class CrudService<
-  T extends $.Expression,
+  T extends $.ObjectType,
 > {
   constructor(
     readonly model: $.$expr_PathNode,
@@ -30,4 +30,6 @@ export abstract class CrudService<
 
     return await query.run(this.edgedbClient) as ExtractShape<T>[];
   }
+
+
 }
