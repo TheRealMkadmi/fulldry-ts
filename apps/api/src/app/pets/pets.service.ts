@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EDGE_DB_CLIENT } from 'nest-edgedb';
-import { CrudService } from '../../common/crud.service';
-import { $Pet, Pet } from 'dbschema/edgeql-js/modules/default';
-import type { Client } from 'edgedb';
+import { CrudService, ExtractShape } from '../../common/crud.service';
+import { type Client } from 'edgedb';
+import { type $Pet, Pet } from 'dbschema/edgeql-js/modules/default';
 import e, { $infer } from 'dbschema/edgeql-js';
-import * as console from 'node:console';
 
 @Injectable()
 export class PetsService extends CrudService<$Pet> {
@@ -14,14 +13,9 @@ export class PetsService extends CrudService<$Pet> {
     super(Pet, edgedbClient);
   }
 
-  async findByName(name: string) {
-    const query = e.select(e.Pet, () => ({
-      id: true,
-      name: true,
-    }));
+  async find() {
 
-    const k = await query.run(this.edgedbClient);
-    console.table(k);
-    return k;
+    type t = ExtractShape<$Pet>;
+
   }
 }
