@@ -5,14 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac5003a4-5d44-412a-85dc-ade47ac40f1f" name="Changes" comment="ezzaboubia">
+      <change afterPath="$PROJECT_DIR$/packages/interface-to-class-converter/readme.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/interfaces.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/interfaces.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app/pets/pets.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app/pets/pets.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/common/crud.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/common/crud.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bun.lockb" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lockb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/interface-to-class-converter/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/interface-to-class-converter/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,34 +68,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Wahib/Desktop/Workbench/repos/fulldry-ts/packages",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "pnpm",
-    "npm.api > dev.executor": "Run",
-    "npm.api > generate:edgeql.executor": "Run",
-    "npm.api > generate:interfaces.executor": "Run",
-    "npm.api > start.executor": "Run",
-    "npm.build nest-edgedb.executor": "Run",
-    "npm.build:libs.executor": "Run",
-    "npm.bun run api standalone.executor": "Run",
-    "npm.dev.executor": "Run",
-    "npm.dev:api.executor": "Run",
-    "npm.nest-edgedb > build.executor": "Run",
-    "npm.turbo build nest-edgedb.executor": "Run",
-    "npm.turbo run api.executor": "Run",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "C:\\Users\\Wahib\\Desktop\\Workbench\\repos\\fulldry-ts\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Wahib/Desktop/Workbench/repos/fulldry-ts/packages&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
+    &quot;npm.api &gt; dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.api &gt; generate:edgeql.executor&quot;: &quot;Run&quot;,
+    &quot;npm.api &gt; generate:interfaces.executor&quot;: &quot;Run&quot;,
+    &quot;npm.api &gt; start.executor&quot;: &quot;Run&quot;,
+    &quot;npm.build nest-edgedb.executor&quot;: &quot;Run&quot;,
+    &quot;npm.build:libs.executor&quot;: &quot;Run&quot;,
+    &quot;npm.bun run api standalone.executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev:api.executor&quot;: &quot;Run&quot;,
+    &quot;npm.nest-edgedb &gt; build.executor&quot;: &quot;Run&quot;,
+    &quot;npm.turbo build nest-edgedb.executor&quot;: &quot;Run&quot;,
+    &quot;npm.turbo run api.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\Wahib\\Desktop\\Workbench\\repos\\fulldry-ts\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Wahib\Desktop\Workbench\repos\fulldry-ts\packages" />
@@ -203,7 +198,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725299844772</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="ezzaboubia">
+      <option name="closed" value="true" />
+      <created>1725318027317</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1725318027317</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
