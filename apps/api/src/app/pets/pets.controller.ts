@@ -1,6 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { PetsService } from './pets.service';
-import { $default } from '../../../dbschema/interfaces';
 
 @Controller('pets')
 export class PetsController {
@@ -8,9 +7,8 @@ export class PetsController {
 
   }
 
-  @Get()
-  async findAll(): Promise<$default.Pet[]> {
-    return await this.petsService.findAll({}) as unknown as $default.Pet[];
+  @Get('/')
+  async test() {
+    return await this.petsService.findOne('1e3d12d7-630a-11ef-ab07-9531a2453419');
   }
-
 }

@@ -8,6 +8,7 @@
     "dev": "bun --watch ./src/main.ts",
     "start": "bun ./src/main.ts",
     "dev:debug": "bun --watch --inspect-brk ./src/main.ts",
+    "generate:all": "bunx @edgedb/generate edgeql-js && bunx @edgedb/generate interfaces && bunx interface-to-class-converter dbschema\\interfaces.ts dbschema\\classes.ts cfg,ext,fts,schema,sys,types,helper types",
     "generate:edgeql": "bunx @edgedb/generate edgeql-js",
     "generate:interfaces": "bunx @edgedb/generate interfaces",
     "generate:db-client": "bunx @edgedb/generate edgeql-js && bunx @edgedb/generate interfaces",

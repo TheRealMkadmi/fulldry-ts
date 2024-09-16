@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac5003a4-5d44-412a-85dc-ade47ac40f1f" name="Changes" comment="ezzaboubia">
-      <change afterPath="$PROJECT_DIR$/packages/interface-to-class-converter/readme.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/classes.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app/pets/pets.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app/pets/pets.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/common/crud.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bun.lockb" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lockb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/interface-to-class-converter/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/interface-to-class-converter/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -80,6 +86,7 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
     &quot;npm.api &gt; dev.executor&quot;: &quot;Run&quot;,
+    &quot;npm.api &gt; dev:debug.executor&quot;: &quot;Debug&quot;,
     &quot;npm.api &gt; generate:edgeql.executor&quot;: &quot;Run&quot;,
     &quot;npm.api &gt; generate:interfaces.executor&quot;: &quot;Run&quot;,
     &quot;npm.api &gt; start.executor&quot;: &quot;Run&quot;,
@@ -107,7 +114,17 @@
       <recent name="C:\Users\Wahib\Desktop\Workbench\repos\wooden-spade\packages" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.build:libs">
+  <component name="RunManager" selected="npm.bun run api standalone">
+    <configuration name="api &gt; dev:debug" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/api/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev:debug" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="api &gt; generate:interfaces" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/apps/api/package.json" />
       <command value="run" />
@@ -132,11 +149,13 @@
       <item itemvalue="npm.bun run api standalone" />
       <item itemvalue="npm.turbo run api" />
       <item itemvalue="npm.turbo build nest-edgedb" />
+      <item itemvalue="npm.api &gt; dev:debug" />
       <item itemvalue="npm.api &gt; generate:interfaces" />
       <item itemvalue="npm.build:libs" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.api &gt; dev:debug" />
         <item itemvalue="npm.build:libs" />
         <item itemvalue="npm.api &gt; generate:interfaces" />
       </list>
@@ -206,11 +225,30 @@
       <option name="project" value="LOCAL" />
       <updated>1725318027317</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="ezzaboubia">
+      <option name="closed" value="true" />
+      <created>1725363851821</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1725363851821</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <ignored-roots>

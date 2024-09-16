@@ -1,12 +1,12 @@
 {
   "name": "interface-to-class-converter",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "main": "dist/interface-to-class-converter.cjs.js",
   "module": "dist/interface-to-class-converter.esm.js",
   "description": "Convert TypeScript interfaces to classes",
   "bin": "bin/interface-to-class-converter.js",
   "scripts": {
-    "build": "preconstruct build",
+    "build": "bun preconstruct build",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest"
