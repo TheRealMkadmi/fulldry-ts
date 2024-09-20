@@ -30,7 +30,8 @@ export class CrudService<
   constructor(
     protected readonly edgedbClient: Client,
     protected readonly model: typeof Pet,
-  ) {}
+  ) {
+  }
 
   async findAll() {
     return await e
@@ -82,7 +83,11 @@ export class CrudService<
   >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>) {
     const query = e.select(this.model, (pet) => ({
       ...shape,
-      filter: e.op(pet.name, '>', 1999),
+      filter: e.op(
+        pet.id,
+        'in',
+        e.array_unpack(e.literal(e.array(e.str), ids)),
+      ),
     }));
     return await query.run(this.edgedbClient);
   }
