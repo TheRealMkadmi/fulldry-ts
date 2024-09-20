@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ac5003a4-5d44-412a-85dc-ade47ac40f1f" name="Changes" comment="ezzaboubia">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/select.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/select.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app/pets/pets.controller.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app/pets/pets.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/src/common/services/crud.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/common/services/crud.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bun.lockb" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lockb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

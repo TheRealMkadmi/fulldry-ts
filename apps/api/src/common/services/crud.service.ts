@@ -68,10 +68,22 @@ export class CrudService<
     Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
   >(id: string, shape: Readonly<Shape>) {
     return await e
-      .select(e.Pet, (pet) => ({
+      .select(this.model, (pet) => ({
         ...shape,
         filter_single: e.op(pet.id, '=', e.uuid(id)),
       }))
       .run(this.edgedbClient);
+  }
+
+  async findManyByIdsProjection<
+    Expr extends TypeSet<R>,
+    Element extends Expr['__element__'],
+    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
+  >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>) {
+    const query = e.select(this.model, (pet) => ({
+      ...shape,
+      filter: e.op(pet.name, '>', 1999),
+    }));
+    return await query.run(this.edgedbClient);
   }
 }
