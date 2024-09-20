@@ -10,4 +10,12 @@ export class PetsService extends CrudService<$Pet> {
   constructor(@Inject(EDGE_DB_CLIENT) protected readonly edgedbClient: Client) {
     super(edgedbClient, e.Pet);
   }
+
+  async test() {
+    const query = await e
+      .select(e.Pet, (pet) => ({
+        name: true,
+      }))
+      .run(this.edgedbClient);
+  }
 }

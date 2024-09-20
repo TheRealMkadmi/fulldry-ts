@@ -1,57 +1,77 @@
 import { Client } from 'edgedb';
 import e from 'dbschema/edgeql-js';
-import { LinkDesc, ObjectType, PropertyDesc, setToTsType, TypeSet } from 'dbschema/edgeql-js/typesystem';
+import {
+  $scopify,
+  ExclusiveTuple,
+  LinkDesc,
+  ObjectType,
+  ObjectTypeExpression,
+  ObjectTypePointers,
+  PropertyDesc,
+  setToTsType,
+  TypeSet,
+} from 'dbschema/edgeql-js/typesystem';
 import { $expr_PathNode, Cardinality } from 'dbschema/edgeql-js/reflection';
 import { $uuid } from 'dbschema/edgeql-js/modules/std';
 import { $ObjectType } from 'dbschema/edgeql-js/modules/schema';
-import { type $Pet } from 'dbschema/edgeql-js/modules/default';
-
-type StdObjectShape = {
-    id: PropertyDesc<$uuid, Cardinality.One, true, false, true, true>;
-    __type__: LinkDesc<$ObjectType, Cardinality.One, {}, false, false, true, false>;
-};
-
-type DefaultExclusives = [
-  {
-    id: {
-      __element__: $uuid;
-      __cardinality__: Cardinality.One | Cardinality.AtMostOne;
-    };
-  }
-]
-
-type r = setToTsType<TypeSet<$Pet, Cardinality.Many>>; 
-
-type ExtractShape<T> = T extends ObjectType<string, infer S, any, any> ? S : never;
-type ExtractExclusives<T> = T extends ObjectType<any, any, any, infer E> ? E : never;
+import { $PetλShape, $Pet, type Pet } from 'dbschema/edgeql-js/modules/default';
+import {
+  objectTypeToSelectShape,
+  SelectModifiers,
+} from 'dbschema/edgeql-js/select';
+import { $linkPropify } from 'dbschema/edgeql-js/path';
+import * as _ from 'dbschema/edgeql-js/imports';
 
 export class CrudService<
-  R extends ObjectType<string, K, null, E>,
-  K extends StdObjectShape = ExtractShape<R>, 
-  E extends DefaultExclusives = ExtractExclusives<R>,
+  R extends ObjectType<string, ObjectTypePointers, null, ExclusiveTuple>,
+  K extends R['__pointers__'] = R['__pointers__'],
+  E extends R['__exclusives__'] = R['__exclusives__'],
 > {
   constructor(
     protected readonly edgedbClient: Client,
-    protected readonly model: $expr_PathNode<TypeSet<ObjectType<string, StdObjectShape, null, DefaultExclusives>, Cardinality.Many>, null>,
-  ) { 
-
-  }
+    protected readonly model: typeof Pet,
+  ) {}
 
   async findAll() {
-    return await e.select(this.model).run(this.edgedbClient);
+    return await e
+      .select(this.model, (m) => ({
+        ...m['*'],
+      }))
+      .run(this.edgedbClient);
   }
 
-  async findOne(id: string) {
+  async findOneById(id: string) {
     return await e
-      .select(
-        this.model,
-        (model) => ({
-          ...model['*'],
-          filter_single: e.op(model.id, '=', e.uuid(id))
-        }),
+      .select(this.model, (model) => ({
+        ...model['*'],
+        filter_single: e.op(model.id, '=', e.uuid(id)),
+      }))
+      .run(this.edgedbClient);
+  }
 
-      )
+  async findManyByIds(ids: string[]) {
+    return await e
+      .select(this.model, (model) => ({
+        ...model['*'],
+        filter: e.op(
+          model.id,
+          'in',
+          e.array_unpack(e.literal(e.array(e.str), ids)),
+        ),
+      }))
+      .run(this.edgedbClient);
+  }
+
+  async findOneByIdProjection<
+    Expr extends TypeSet<R>,
+    Element extends Expr['__element__'],
+    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
+  >(id: string, shape: Readonly<Shape>) {
+    return await e
+      .select(e.Pet, (pet) => ({
+        ...shape,
+        filter_single: e.op(pet.id, '=', e.uuid(id)),
+      }))
       .run(this.edgedbClient);
   }
 }
-
