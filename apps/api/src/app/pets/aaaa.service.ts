@@ -36,7 +36,7 @@ export class BB<
   }
 
   async findOneById(id: string) {
-    const model = e[this.modelName as 'Pet'];
+    const model = e[this.modelName as ValidNameSpaceKeys];
     return await e
       .select(model, (model) => ({
         ...model['*'],
