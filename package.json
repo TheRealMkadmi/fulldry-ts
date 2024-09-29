@@ -25,6 +25,7 @@
     "packages/*"
   ],
   "trustedDependencies": [
+    "@swc/core",
     "core-js"
   ]
 }

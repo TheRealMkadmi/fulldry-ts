@@ -1,14 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EDGE_DB_CLIENT } from 'nest-edgedb';
-import { CrudService } from '../../common/services/crud.service';
 import { type Client } from 'edgedb';
-import { $Pet, $PetλShape, Pet } from 'dbschema/edgeql-js/modules/default';
+import { type $Pet, $PetλShape, Pet } from 'dbschema/edgeql-js/modules/default';
 import e from 'dbschema/edgeql-js';
+import { BB } from './aaaa.service';
 
 @Injectable()
-export class PetsService extends CrudService<$PetλShape> {
+export class PetsService extends BB<'Pet'> {
   constructor(@Inject(EDGE_DB_CLIENT) protected readonly edgedbClient: Client) {
-    super(edgedbClient, e.Pet);
+    super('Pet', edgedbClient);
   }
 
   async test() {

@@ -7,6 +7,8 @@
     <list default="true" id="ac5003a4-5d44-412a-85dc-ade47ac40f1f" name="Changes" comment="ezzaboubia">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/src/common/services/crud.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/common/services/crud.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bun.lockb" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lockb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +59,9 @@
     &quot;accountId&quot;: &quot;05616986-4af0-41a1-ab1d-3d17257a76d4&quot;
   }
 }</component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 3
@@ -69,10 +74,11 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Wahib/Desktop/Workbench/repos/fulldry-ts/packages&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/administrator/Desktop/fulldry-ts&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -92,7 +98,7 @@
     &quot;npm.turbo build nest-edgedb.executor&quot;: &quot;Run&quot;,
     &quot;npm.turbo run api.executor&quot;: &quot;Run&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\Wahib\\Desktop\\Workbench\\repos\\fulldry-ts\\node_modules\\typescript\\lib&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\administrator\\Desktop\\fulldry-ts\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -140,8 +146,8 @@
     </configuration>
     <list>
       <item itemvalue="npm.bun run api standalone" />
-      <item itemvalue="npm.turbo run api" />
       <item itemvalue="npm.turbo build nest-edgedb" />
+      <item itemvalue="npm.turbo run api" />
       <item itemvalue="npm.api &gt; dev:debug" />
       <item itemvalue="npm.api &gt; generate:interfaces" />
       <item itemvalue="npm.build:libs" />
@@ -154,13 +160,6 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-WS-242.20224.342" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -169,6 +168,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1724200172538</updated>
+      <workItem from="1727466800307" duration="194000" />
+      <workItem from="1727467351574" duration="639000" />
     </task>
     <task id="LOCAL-00001" summary="checkpoint 1">
       <option name="closed" value="true" />

@@ -3,7 +3,9 @@ import e from 'dbschema/edgeql-js';
 import {
   type $scopify,
   ExclusiveTuple,
-  ObjectType, type ObjectTypeExpression, ObjectTypePointers,
+  ObjectType,
+  type ObjectTypeExpression,
+  ObjectTypePointers,
   TypeSet,
 } from 'dbschema/edgeql-js/typesystem';
 import {
@@ -18,37 +20,21 @@ import * as $ from '../../../dbschema/edgeql-js/reflection';
 import { $Pet, $PetλShape } from '../../../dbschema/edgeql-js/modules/default';
 import { $objectTypeToTupleType } from '../../../dbschema/edgeql-js/collections';
 import { $expr_Update, UpdateShape } from '../../../dbschema/edgeql-js/update';
-import type * as _std from "../../../dbschema/edgeql-js/modules/std";
+import type * as _std from '../../../dbschema/edgeql-js/modules/std';
 import { $ObjectType } from 'dbschema/edgeql-js/modules/schema';
+import { $BaseObjectλShape } from '../../../dbschema/edgeql-js/modules/std';
 
-
-type IsSubtype<T, U> = T extends U ? true : false;
-type IsStrictSubtype<T, U> = [T] extends [U]
-  ? [U] extends [T]
-  ? false
-  : true
-  : false;
-
-type test = {
-  id: $.PropertyDesc<_std.$uuid, $.Cardinality.One, true, false, true, true>;
-  __type__: $.LinkDesc<$ObjectType, $.Cardinality.One, {}, false, false, true, false>;
-  name: $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
-
-};
-
-export class CrudService<S extends test> {
+export class CrudService<S extends $BaseObjectλShape> {
   constructor(
     protected readonly edgedbClient: Client,
     protected readonly model: $expr_PathNode<
       TypeSet<
-        ObjectType<string, test, null, ExclusiveTuple>,
+        ObjectType<string, $BaseObjectλShape, null, ExclusiveTuple>,
         Cardinality.Many
       >,
       null
     >,
-  ) {
-
-  }
+  ) {}
 
   async findAll() {
     return await e
@@ -81,7 +67,9 @@ export class CrudService<S extends test> {
   }
 
   async findOneByIdProjection<
-    Expr extends TypeSet<ObjectType<string, $.ObjectTypePointers, null, ExclusiveTuple>>, // todo: while this compiles, it won't give intellisense for the shape
+    Expr extends TypeSet<
+      ObjectType<string, $.ObjectTypePointers, null, ExclusiveTuple>
+    >, // todo: while this compiles, it won't give intellisense for the shape
     Element extends Expr['__element__'],
     Shape extends objectTypeToSelectShape<Element>,
   >(id: string, shape: Readonly<Shape>) {
@@ -94,7 +82,7 @@ export class CrudService<S extends test> {
   }
 
   async findManyByIdsWithProjection<
-    Expr extends TypeSet<ObjectType<string, $PetλShape, null, ExclusiveTuple>>,
+    Expr extends TypeSet<ObjectType<string, $BaseObjectλShape, null, ExclusiveTuple>>,
     Element extends Expr['__element__'],
     Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
   >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>) {
@@ -113,29 +101,35 @@ export class CrudService<S extends test> {
   async update<
     Shape extends {
       filter?: SelectModifiers['filter'];
-      filter_single?: SelectModifiers<TypeSet<
-        ObjectType<string, $PetλShape, null, ExclusiveTuple>,
-        Cardinality.Many
-      >['__element__']>['filter_single'];
-      set: UpdateShape<TypeSet<
-        ObjectType<string, $PetλShape, null, ExclusiveTuple>,
-        Cardinality.Many
-      >>;
+      filter_single?: SelectModifiers<
+        TypeSet<
+          ObjectType<string, $BaseObjectλShape, null, ExclusiveTuple>,
+          Cardinality.Many
+        >['__element__']
+      >['filter_single'];
+      set: UpdateShape<
+        TypeSet<
+          ObjectType<string, $BaseObjectλShape, null, ExclusiveTuple>,
+          Cardinality.Many
+        >
+      >;
     },
   >(
-    shape: (scope: $scopify<TypeSet<
-      ObjectType<string, $PetλShape, null, ExclusiveTuple>,
-      Cardinality.Many
-    >['__element__']>) => Readonly<Shape>,
+    shape: (
+      scope: $scopify<
+        TypeSet<
+          ObjectType<string, $BaseObjectλShape, null, ExclusiveTuple>,
+          Cardinality.Many
+        >['__element__']
+      >,
+    ) => Readonly<Shape>,
   ) {
-    return await e
-      .update(this.model, shape)
-      .run(this.edgedbClient);
+    return await e.update(this.model, shape).run(this.edgedbClient);
   }
 
   async insert(
     data: InsertShape<
-      ObjectType<string, Omit<$PetλShape, 'id'>, null, ExclusiveTuple>
+      ObjectType<string, Omit<$BaseObjectλShape, 'id'>, null, ExclusiveTuple>
     >,
   ) {
     return await e.insert(this.model, data).run(this.edgedbClient);
@@ -143,7 +137,7 @@ export class CrudService<S extends test> {
 
   async insertMany(
     data: InsertShape<
-      ObjectType<string, Omit<$PetλShape, 'id'>, null, ExclusiveTuple>
+      ObjectType<string, Omit<$BaseObjectλShape, 'id'>, null, ExclusiveTuple>
     >[],
   ) {
     const m = $objectTypeToTupleType($.$toSet($Pet, $.Cardinality.Many))[
