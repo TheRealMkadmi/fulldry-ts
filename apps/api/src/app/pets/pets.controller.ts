@@ -18,7 +18,7 @@ export class PetsController {
   }
 
   async nam() {
-    return await this.petsService.findOneByIdProjection('nam', {
+    return await this.petsService.findOneByIdProjection('1e3d12d7-630a-11ef-ab07-9531a2453419', {
       name: true,
     });
   }

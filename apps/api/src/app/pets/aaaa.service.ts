@@ -45,7 +45,7 @@ export class BB<
       .run(this.client);
   }
 
-  async findOneByIdProjection(id: string, projection: Record<keyof typeof e[TModelName], boolean>) {
+  async findOneByIdProjection(id: string, projection: Partial<Record<keyof typeof e[TModelName], boolean>>) {
     const model = e[this.modelName  as ValidNameSpaceKeys];
     return await e
       .select(model, (model) => ({
