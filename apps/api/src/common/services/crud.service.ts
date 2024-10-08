@@ -140,7 +140,7 @@ export class CrudService<S extends $BaseObjectλShape> {
       ObjectType<string, Omit<$BaseObjectλShape, 'id'>, null, ExclusiveTuple>
     >[],
   ) {
-    const m = $objectTypeToTupleType($.$toSet($Pet, $.Cardinality.Many))[
+    const m = $objectTypeToTupleType( $.$toSet($Pet, $.Cardinality.Many))[
       '__shape__'
     ];
     const query = e.params(

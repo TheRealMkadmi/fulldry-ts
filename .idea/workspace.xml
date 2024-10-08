@@ -5,10 +5,60 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac5003a4-5d44-412a-85dc-ade47ac40f1f" name="Changes" comment="ezzaboubia">
+      <change afterPath="$PROJECT_DIR$/apps/api/src/app/pet/pets.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/api/src/app/pet/pets.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/api/src/app/user/user.controller.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/api/src/app/user/user.module.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/apps/api/src/app/user/user.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/default.esdl" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/default.esdl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/__spec__.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/__spec__.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/cardinality.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/cardinality.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/cast.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/cast.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/castMaps.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/castMaps.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/casting.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/casting.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/collections.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/collections.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/detached.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/detached.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/external.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/external.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/for.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/for.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/funcops.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/funcops.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/globals.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/globals.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/group.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/group.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/hydrate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/hydrate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/imports.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/imports.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/insert.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/insert.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/json.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/json.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/literal.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/literal.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/cal.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/cal.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/cfg.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/cfg.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/default.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/default.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/fts.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/fts.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/math.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/math.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/schema.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/std.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/std.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/std/enc.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/std/enc.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/sys.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/modules/sys.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/operators.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/operators.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/params.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/params.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/path.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/path.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/query.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/query.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/range.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/range.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/reflection.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/reflection.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/select.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/select.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/set.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/set.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/setImpl.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/setImpl.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/syntax.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/syntax.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/toEdgeQL.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/toEdgeQL.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/typesystem.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/typesystem.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/update.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/update.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/with.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/dbschema/edgeql-js/with.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/aaaa.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/common/services/base.model.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.controller.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/app/pet/pets.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/src/app/pets/pets.service.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/src/common/services/crud.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/src/common/services/crud.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bun.lockb" beforeDir="false" afterPath="$PROJECT_DIR$/bun.lockb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +74,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -48,6 +103,21 @@
               </option>
               <option name="repositoryRootUrl" value="file://$PROJECT_DIR$/apps/typescript-starter" />
             </RecentBranchesForRepo>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="idk-man" />
+                    <option name="lastUsedInstant" value="1727895606" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1727895605" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
           </list>
         </option>
       </RecentBranches>
@@ -55,7 +125,7 @@
   </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/nestjs/typescript-starter.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/TheRealMkadmi/fulldry-ts.git&quot;,
     &quot;accountId&quot;: &quot;05616986-4af0-41a1-ab1d-3d17257a76d4&quot;
   }
 }</component>
@@ -72,53 +142,65 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/administrator/Desktop/fulldry-ts&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
-    &quot;npm.api &gt; dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.api &gt; dev:debug.executor&quot;: &quot;Debug&quot;,
-    &quot;npm.api &gt; generate:edgeql.executor&quot;: &quot;Run&quot;,
-    &quot;npm.api &gt; generate:interfaces.executor&quot;: &quot;Run&quot;,
-    &quot;npm.api &gt; start.executor&quot;: &quot;Run&quot;,
-    &quot;npm.build nest-edgedb.executor&quot;: &quot;Run&quot;,
-    &quot;npm.build:libs.executor&quot;: &quot;Run&quot;,
-    &quot;npm.bun run api standalone.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev:api.executor&quot;: &quot;Run&quot;,
-    &quot;npm.nest-edgedb &gt; build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.turbo build nest-edgedb.executor&quot;: &quot;Run&quot;,
-    &quot;npm.turbo run api.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\administrator\\Desktop\\fulldry-ts\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "#1 on idk-man",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Wahib/Desktop/Workbench/repos/fulldry-ts/apps/api/src/app",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "pnpm",
+    "npm.api > dev.executor": "Run",
+    "npm.api > dev:debug.executor": "Debug",
+    "npm.api > generate:edgeql.executor": "Run",
+    "npm.api > generate:interfaces.executor": "Run",
+    "npm.api > start.executor": "Run",
+    "npm.build nest-edgedb.executor": "Run",
+    "npm.build:libs.executor": "Run",
+    "npm.bun run api standalone.executor": "Run",
+    "npm.dev.executor": "Run",
+    "npm.dev:api.executor": "Run",
+    "npm.nest-edgedb > build.executor": "Run",
+    "npm.turbo build nest-edgedb.executor": "Run",
+    "npm.turbo run api.executor": "Run",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "C:\\Users\\Wahib\\Desktop\\Workbench\\repos\\fulldry-ts\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Wahib\Desktop\Workbench\repos\fulldry-ts\apps\api\src\app" />
       <recent name="C:\Users\Wahib\Desktop\Workbench\repos\fulldry-ts\packages" />
       <recent name="C:\Users\Wahib\Desktop\Workbench\repos\wooden-spade" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Wahib\Desktop\Workbench\repos\fulldry-ts\apps\api\src\common\services" />
       <recent name="C:\Users\Wahib\Desktop\Workbench\repos\wooden-spade\apps\api\src\app" />
       <recent name="C:\Users\Wahib\Desktop\Workbench\repos\wooden-spade\packages\nest-edgedb" />
       <recent name="C:\Users\Wahib\Desktop\Workbench\repos\wooden-spade\packages" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.bun run api standalone">
+  <component name="RunManager" selected="npm.api &gt; generate:edgeql">
     <configuration name="api &gt; dev:debug" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/apps/api/package.json" />
       <command value="run" />
       <scripts>
         <script value="dev:debug" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="api &gt; generate:edgeql" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/apps/api/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="generate:edgeql" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -148,17 +230,26 @@
       <item itemvalue="npm.bun run api standalone" />
       <item itemvalue="npm.turbo build nest-edgedb" />
       <item itemvalue="npm.turbo run api" />
+      <item itemvalue="npm.api &gt; generate:edgeql" />
       <item itemvalue="npm.api &gt; dev:debug" />
       <item itemvalue="npm.api &gt; generate:interfaces" />
       <item itemvalue="npm.build:libs" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.api &gt; generate:edgeql" />
         <item itemvalue="npm.api &gt; dev:debug" />
         <item itemvalue="npm.build:libs" />
         <item itemvalue="npm.api &gt; generate:interfaces" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-WS-242.20224.342" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

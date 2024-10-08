@@ -2,7 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EdgeDBModule } from 'nest-edgedb';
 import { SwaggerConfigService } from './common/services/swagger.service';
-import { PetsModule } from './app/pets/pets.module';
+import { PetModule } from './app/pet/pet.module';
+import { UserModule } from './app/user/user.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { PetsModule } from './app/pets/pets.module';
       }),
       inject: [ConfigService],
     }),
-    PetsModule
+    PetModule,
+    UserModule
   ],
   providers: [SwaggerConfigService],
 })
