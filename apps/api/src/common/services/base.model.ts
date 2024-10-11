@@ -3,26 +3,29 @@ import e, { Cardinality } from 'dbschema/edgeql-js';
 import __defaultExports, { $Pet, $PetλShape, Pet } from 'dbschema/edgeql-js/modules/default';
 import { $expr_PathNode, computeTsType, LinkDesc, ObjectType, PropertyDesc, setToTsType, TypeSet } from 'dbschema/edgeql-js/reflection';
 
-export type ExtractTypeSet<T extends keyof __defaultExports> = keyof __defaultExports extends T ? __defaultExports[T] extends $expr_PathNode<infer U, any> ? U : never : never;
-export type SelectResult<T extends keyof __defaultExports> = setToTsType<ExtractTypeSet<T>>;
+export type Entities = __defaultExports[keyof __defaultExports];
+
+type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends
+  (<T>() => T extends Y ? 1 : 2)
+  ? true
+  : false;
+
+type IsExactly<T, U> = Equal<T, U> extends true ? T : never;
 
 
-export class Model<
-  TModelName extends keyof __defaultExports,
-> {
+export class Model<T extends Entities> {
   constructor(
-    private readonly modelName: keyof __defaultExports,
+    private readonly model: IsExactly<T, Entities>,
     private readonly client: Client,
   ) {
   }
 
-  async findAll(): Promise<SelectResult<TModelName>> {
-    const model = e[this.modelName];
+  async findAll() {
     return await e
-      .select(model, (m) => ({
+      .select(this.model as T, (m) => ({
         ...m['*'],
       }))
-      .run(this.client) as SelectResult<TModelName>;
+      .run(this.client);
   }
 }
 
