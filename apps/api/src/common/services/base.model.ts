@@ -1,31 +1,26 @@
-import { $, Client } from 'edgedb';
-import e, { Cardinality } from 'dbschema/edgeql-js';
-import __defaultExports, { $Pet, $PetλShape, Pet } from 'dbschema/edgeql-js/modules/default';
-import { $expr_PathNode, computeTsType, LinkDesc, ObjectType, PropertyDesc, setToTsType, TypeSet } from 'dbschema/edgeql-js/reflection';
+// model.ts
+import { Client } from 'edgedb';
+import e from 'dbschema/edgeql-js';
+import __defaultExports from 'dbschema/edgeql-js/modules/default';
+import { $expr_PathNode } from 'dbschema/edgeql-js/reflection';
 
-export type Entities = __defaultExports[keyof __defaultExports];
+type EntityNames = keyof __defaultExports;
+type Entities = typeof __defaultExports[EntityNames];
 
-type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends
-  (<T>() => T extends Y ? 1 : 2)
-  ? true
-  : false;
+export class Model<K extends EntityNames> {
+  private readonly model: Entities;
+  private readonly client: Client;
 
-type IsExactly<T, U> = Equal<T, U> extends true ? T : never;
-
-
-export class Model<T extends Entities> {
-  constructor(
-    private readonly model: IsExactly<T, Entities>,
-    private readonly client: Client,
-  ) {
+  constructor(key: K, client: Client) {
+    this.model = __defaultExports[key];
+    this.client = client;
   }
 
   async findAll() {
     return await e
-      .select(this.model as T, (m) => ({
+      .select(this.model, (m) => ({
         ...m['*'],
       }))
       .run(this.client);
   }
 }
-

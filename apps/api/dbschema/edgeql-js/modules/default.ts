@@ -40,5 +40,5 @@ type __defaultExports = {
 const __defaultExports: __defaultExports = {
   "Pet": Pet,
   "User": User
-};
+} as const;
 export default __defaultExports;
