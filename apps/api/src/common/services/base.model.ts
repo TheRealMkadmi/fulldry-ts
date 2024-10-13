@@ -1,41 +1,41 @@
 // model.ts
-import { Client } from 'edgedb';
-import e from 'dbschema/edgeql-js';
-import __defaultExports, { $User, $UserλShape } from 'dbschema/edgeql-js/modules/default';
+import __defaultExports, { $User, $UserλShape, Pet, User } from 'dbschema/edgeql-js/modules/default';
 import type * as _std from "dbschema/edgeql-js/modules/std";
+import e from 'dbschema/edgeql-js';
 
-import * as $ from "dbschema/edgeql-js/reflection";
 import * as _ from "dbschema/edgeql-js/imports";
-import { $ObjectType } from 'dbschema/edgeql-js/modules/schema';
+import { Client } from 'edgedb';
 
-export type BaseShape = {
-    id: $.PropertyDesc<_std.$uuid, $.Cardinality.One, true, false, true, true>;
-    __type__: $.LinkDesc<$ObjectType, $.Cardinality.One, {}, false, false, true, false>;
-}
 
-type m = $.computeTsType<$User, $.Cardinality.One>;
+type UnionToIntersection<U> =
+    (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
 
-export abstract class BaseRepository
-    <
-        T extends $.$expr_PathNode<$.TypeSet<$User, $.Cardinality.Many>, null>,
-        S extends $.BaseType = T['__element__'],
-        C extends $.Cardinality = T['__cardinality__']
+export type Models = typeof Pet | typeof User;
 
-    > {
+
+export class BaseRepository<TModel extends Models> {
 
     constructor(
-        protected readonly model: $.$expr_PathNode,
-        protected readonly edgedbClient: Client
-    ) {
-    }
+        protected readonly model: TModel & UnionToIntersection<TModel>,
+        protected readonly edgedbClient: Client,
+    ) { }
+
 
     async findAll() {
         return await e
             .select(this.model, (m) => ({
                 ...m['*'],
             }))
-            .run(this.edgedbClient) as $.computeTsType<S, C>;
+            .run(this.edgedbClient);
     }
-
 }
 
+export class test extends BaseRepository<typeof User | typeof User> {
+    constructor(edgedbClient: Client) {
+        super(User, edgedbClient);
+    }
+
+    async findUser() {
+        return await this.findAll();
+    }
+}
