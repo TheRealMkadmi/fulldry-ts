@@ -24,17 +24,17 @@ import type * as _std from '../../../dbschema/edgeql-js/modules/std';
 import { $ObjectType } from 'dbschema/edgeql-js/modules/schema';
 import { $BaseObjectλShape } from '../../../dbschema/edgeql-js/modules/std';
 
-export class CrudService<S extends $BaseObjectλShape> {
+export class CrudService<in out S extends $BaseObjectλShape> {
   constructor(
     protected readonly edgedbClient: Client,
     protected readonly model: $expr_PathNode<
       TypeSet<
-        ObjectType<string, $BaseObjectλShape, null, ExclusiveTuple>,
+        ObjectType<string, S, null, ExclusiveTuple>,
         Cardinality.Many
       >,
       null
     >,
-  ) {}
+  ) { }
 
   async findAll() {
     return await e
@@ -140,7 +140,7 @@ export class CrudService<S extends $BaseObjectλShape> {
       ObjectType<string, Omit<$BaseObjectλShape, 'id'>, null, ExclusiveTuple>
     >[],
   ) {
-    const m = $objectTypeToTupleType( $.$toSet($Pet, $.Cardinality.Many))[
+    const m = $objectTypeToTupleType($.$toSet($Pet, $.Cardinality.Many))[
       '__shape__'
     ];
     const query = e.params(
