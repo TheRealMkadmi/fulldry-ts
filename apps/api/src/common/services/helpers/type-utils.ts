@@ -1,3 +1,5 @@
+import { And } from "type-fest";
+
 export type Expect<T extends true> = T;
 export type ExpectTrue<T extends true> = T;
 export type ExpectFalse<T extends false> = T;
@@ -35,3 +37,4 @@ export type UnionToIntersection<U> = (
 ) extends (k: infer I) => void
   ? I
   : never;
+
