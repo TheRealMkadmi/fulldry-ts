@@ -14,30 +14,27 @@ import { $Pet, $PetλShape, Pet, User } from '../../../dbschema/edgeql-js/module
 import { UpdateShape } from '../../../dbschema/edgeql-js/update';
 import type * as _std from '../../../dbschema/edgeql-js/modules/std';
 
-
-
 type Model = typeof Pet;
 
 type ExtractTypeSet<T> = T extends $expr_PathNode<infer U, any> ? U : never;
 type ModelTypeSet = ExtractTypeSet<Model>;
 type ModelShape = ModelTypeSet['__element__']['__pointers__']
 
-
 type BackLinks = {
   [K in keyof ModelShape as K extends `<${string}[${string}]` ? K : never]: ModelShape[K];
 };
 
-
 type NumericFields = {
   [K in keyof ModelShape]: ModelShape[K]['target'] extends _std.$number ? K : never;
 }[keyof ModelShape];
-
 
 export class CrudService {
   constructor(
     protected readonly edgedbClient: Client,
     protected readonly model: Model,
   ) { }
+
+  // Existing Fetch Methods
 
   async findAll() {
     return await e
@@ -59,7 +56,6 @@ export class CrudService {
   async findAllIds() {
     return await e.select(this.model);
   }
-
 
   async select<
     Expr extends ModelTypeSet,
@@ -141,6 +137,245 @@ export class CrudService {
     return await query.run(this.edgedbClient);
   }
 
+  async findByBackLink(backlink: keyof BackLinks, id: string) {
+    return await e
+      .select(this.model, (model) => ({
+        ...model['*'],
+        filter: e.op(
+          model[backlink]['id'],
+          '=',
+          e.uuid(id),
+        ),
+      }))
+      .run(this.edgedbClient);
+  }
+
+  // Paginate Methods
+
+  /**
+   * Paginate findAll
+   * @param take Number of records to take
+   * @param skip Number of records to skip
+   */
+  async findAllPaginate(take: number, skip: number) {
+    return await e
+      .select(this.model, (m) => ({
+        ...m['*'],
+        limit: take,
+        offset: skip,
+      }))
+      .run(this.edgedbClient);
+  }
+
+  /**
+   * Paginate findAllIds
+   * @param take Number of records to take
+   * @param skip Number of records to skip
+   */
+  async findAllIdsPaginate(take: number, skip: number) {
+    return await e
+      .select(this.model, (model) => ({
+        ...model,
+        limit: take,
+        offset: skip,
+      }))
+      .run(this.edgedbClient);
+  }
+
+  /**
+   * Paginate select
+   * @param modifiers Modifier function
+   * @param take Number of records to take
+   * @param skip Number of records to skip
+   */
+  async selectPaginate<
+    Expr extends ModelTypeSet,
+    Modifiers extends SelectModifiers,
+  >(
+    modifiers: (expr: Expr) => Readonly<Modifiers>,
+    take: number,
+    skip: number,
+  ) {
+    return await e.select(this.model, (model) => ({
+      ...modifiers,
+      limit: take,
+      offset: skip,
+    })).run(this.edgedbClient);
+  }
+
+
+  async findPaginate<
+    Expr extends ModelTypeSet,
+    Element extends Expr["__element__"],
+    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
+    Scope extends $scopify<Element> &
+    $linkPropify<{
+      [k in keyof Expr]: k extends "__cardinality__"
+      ? Cardinality.One
+      : Expr[k];
+    }>,
+  >(
+    shape: (scope: Scope) => Readonly<Shape>,
+    take: number,
+    skip: number,
+  ) {
+    return await e.select(this.model, (model) => ({
+      ...shape,
+      limit: take,
+      offset: skip,
+    })).run(this.edgedbClient);
+  }
+
+
+  async findManyByIdsPaginate(ids: string[], take: number, skip: number) {
+    return await e
+      .select(this.model, (model) => ({
+        ...model['*'],
+        filter: e.op(
+          model.id,
+          'in',
+          e.array_unpack(e.literal(e.array(e.str), ids)),
+        ),
+        limit: take,
+        offset: skip,
+      }))
+      .run(this.edgedbClient);
+  }
+
+
+  async findOneByIdProjectionPaginate<
+    Expr extends ModelTypeSet,
+    Element extends Expr["__element__"],
+    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
+    Scope extends $scopify<Element> &
+    $linkPropify<{
+      [k in keyof Expr]: k extends "__cardinality__"
+      ? Cardinality.One
+      : Expr[k];
+    }>,
+  >(
+    id: string,
+    shape: (scope: Scope) => Readonly<Shape>,
+    take: number,
+    skip: number,
+  ) {
+    return await e
+      .select(this.model, (model) => ({
+        ...shape,
+        filter_single: e.op(model.id, '=', e.uuid(id)),
+        limit: take,
+        offset: skip,
+      }))
+      .run(this.edgedbClient);
+  }
+
+
+  async findManyByIdsWithProjectionPaginate<
+    Expr extends ModelTypeSet,
+    Element extends Expr['__element__'],
+    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
+  >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>, take: number, skip: number) {
+    const query = e.select(this.model, (model) => ({
+      ...shape,
+      filter: e.op(
+        model.id,
+        'in',
+        e.array_unpack(e.literal(e.array(e.str), ids)),
+      ),
+      limit: take,
+      offset: skip,
+    }));
+    return await query.run(this.edgedbClient);
+  }
+
+  async findByBackLinkPaginate(backlink: keyof BackLinks, id: string, take: number, skip: number) {
+    return await e
+      .select(this.model, (model) => ({
+        ...model['*'],
+        filter: e.op(
+          model[backlink]['id'],
+          '=',
+          e.uuid(id),
+        ),
+        limit: take,
+        offset: skip,
+      }))
+      .run(this.edgedbClient);
+  }
+
+
+  async count(
+    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
+  ): Promise<number> {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+    }));
+    return await e.count(query).run(this.edgedbClient);
+  }
+
+  async exists(
+    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
+  ): Promise<boolean> {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+    }));
+    return await e.count(query).run(this.edgedbClient) > 0;
+  }
+
+  async increment(
+    id: string,
+    field: NumericFields,
+    value: number = 1,
+  ) {
+    return await e
+      .update(this.model, (model) => ({
+        filter_single: e.op(model.id, '=', e.uuid(id)),
+        set: {
+          [field]: e.op(model[field], '+', value),
+        },
+      }))
+      .run(this.edgedbClient);
+  }
+
+  async decrement(
+    id: string,
+    field: NumericFields,
+    value: number = 1,
+  ) {
+    return await e
+      .update(this.model, (model) => ({
+        filter_single: e.op(model.id, '=', e.uuid(id)),
+        set: {
+          [field]: e.op(model[field], '-', value),
+        },
+      }))
+      .run(this.edgedbClient);
+  }
+
+  async sum(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+      value: e.sum(model[field]),
+    }));
+    return await query.run(this.edgedbClient);
+  }
+
+  async min(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+      value: e.min(model[field]),
+    }));
+    return await query.run(this.edgedbClient);
+  }
+
+  async max(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+      value: e.max(model[field]),
+    }));
+    return await query.run(this.edgedbClient);
+  }
+
   async update<
     Shape extends {
       filter?: SelectModifiers['filter'];
@@ -206,94 +441,4 @@ export class CrudService {
       }))
       .run(this.edgedbClient);
   }
-
-  async findByBackLink(backlink: keyof BackLinks, id: string) {
-    return await e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
-          model[backlink]['id'],
-          '=',
-          e.uuid(id),
-        ),
-      }))
-      .run(this.edgedbClient);
-  }
-
-  // Count the number of records matching an optional filter
-  async count(
-    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
-  ): Promise<number> {
-    const query = e.select(this.model, (model) => ({
-      filter: filter ? filter(model) : undefined,
-    }));
-    return await e.count(query).run(this.edgedbClient);
-  }
-
-
-  async exists(
-    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
-  ): Promise<boolean> {
-    const query = e.select(this.model, (model) => ({
-      filter: filter ? filter(model) : undefined,
-    }));
-    return await e.count(query).run(this.edgedbClient) > 0;
-  }
-
-  // Increment a numeric field by a value (default is 1)
-  async increment(
-    id: string,
-    field: NumericFields,
-    value: number = 1,
-  ) {
-    return await e
-      .update(this.model, (model) => ({
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-        set: {
-          [field]: e.op(model[field], '+', value),
-        },
-      }))
-      .run(this.edgedbClient);
-  }
-
-  // Decrement a numeric field by a value (default is 1)
-  async decrement(
-    id: string,
-    field: NumericFields,
-    value: number = 1,
-  ) {
-    return await e
-      .update(this.model, (model) => ({
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-        set: {
-          [field]: e.op(model[field], '-', value),
-        },
-      }))
-      .run(this.edgedbClient);
-  }
-
-  async sum(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
-    const query = e.select(this.model, (model) => ({
-      filter: filter ? filter(model) : undefined,
-      value: e.sum(model[field]),
-    }));
-    return await query.run(this.edgedbClient);
-  }
-
-  async min(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
-    const query = e.select(this.model, (model) => ({
-      filter: filter ? filter(model) : undefined,
-      value: e.min(model[field]),
-    }));
-    return await query.run(this.edgedbClient);
-  }
-
-  async max(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
-    const query = e.select(this.model, (model) => ({
-      filter: filter ? filter(model) : undefined,
-      value: e.min(model[field]),
-    }));
-    return await query.run(this.edgedbClient);
-  }
-
 }
