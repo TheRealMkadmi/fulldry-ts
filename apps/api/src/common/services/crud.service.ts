@@ -14,7 +14,6 @@ import { $Pet, $PetλShape, Pet, User } from '../../../dbschema/edgeql-js/module
 import { UpdateShape } from '../../../dbschema/edgeql-js/update';
 import type * as _std from '../../../dbschema/edgeql-js/modules/std';
 
-import { type $infer } from "dbschema/edgeql-js";
 
 
 type Model = typeof Pet;
@@ -176,7 +175,17 @@ export class CrudService {
     return await e.insert(this.model, data).run(this.edgedbClient);
   }
 
+  async insertMany(
+    data: InsertShape<ModelTypeSet['__element__']>[],
+  ) {
+    const inserts = data.map((d) => e.insert(this.model, d));
+    // By iterating inside your query using e.for, you’re guaranteed everything will happen in a single query.
+    const query = e.for(e.set(...inserts), (item) => {
+      return item;
+    });
 
+    return await query.run(this.edgedbClient);
+  }
 
   async delete(id: string) {
     return await e
@@ -224,11 +233,11 @@ export class CrudService {
 
   async exists(
     filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
-  ): Promise<number> {
+  ): Promise<boolean> {
     const query = e.select(this.model, (model) => ({
       filter: filter ? filter(model) : undefined,
     }));
-    return await e.count(query).run(this.edgedbClient);
+    return await e.count(query).run(this.edgedbClient) > 0;
   }
 
   // Increment a numeric field by a value (default is 1)
@@ -263,16 +272,28 @@ export class CrudService {
       .run(this.edgedbClient);
   }
 
-  async insertMany(
-    data: InsertShape<ModelTypeSet['__element__']>[],
-  ) {
-    const inserts = data.map((d) => e.insert(this.model, d));
-    // By iterating inside your query using e.for, you’re guaranteed everything will happen in a single query.
-    const query = e.for(e.set(...inserts), (item) => {
-      return item;
-    });
-
-
+  async sum(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+      value: e.sum(model[field]),
+    }));
     return await query.run(this.edgedbClient);
   }
+
+  async min(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+      value: e.min(model[field]),
+    }));
+    return await query.run(this.edgedbClient);
+  }
+
+  async max(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+    const query = e.select(this.model, (model) => ({
+      filter: filter ? filter(model) : undefined,
+      value: e.min(model[field]),
+    }));
+    return await query.run(this.edgedbClient);
+  }
+
 }
