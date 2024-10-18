@@ -1,11 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EDGE_DB_CLIENT } from 'nest-edgedb';
 import { type Client } from 'edgedb';
-import { Model } from '../../common/base.model';
+import { PetRepository } from './pet.repository';
+
 
 @Injectable()
-export class PetService extends Model<'Pet'> {
-  constructor(@Inject(EDGE_DB_CLIENT) protected readonly edgedbClient: Client) {
-    super('Pet', edgedbClient);
+export class PetService {
+  protected repository: PetRepository;
+
+  constructor(
+    @Inject(EDGE_DB_CLIENT) private readonly client: Client,
+  ) {
+    this.repository = new PetRepository(this.client);
+  }
+
+  async getAll() {
+    return this.repository.findOneByIdProjection("test", (m) => ({
+      ...m['*']
+    }))
   }
 }

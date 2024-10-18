@@ -29,10 +29,10 @@ type NumericFields = {
   [K in keyof ModelShape]: ModelShape[K]['target'] extends _std.$number ? K : never;
 }[keyof ModelShape];
 
-export class CrudService {
+export class PetRepository {
+  protected readonly model: Model = Pet;
   constructor(
     protected readonly edgedbClient: Client,
-    protected readonly model: Model,
   ) { }
 
   async findAll() {
@@ -53,52 +53,35 @@ export class CrudService {
   }
 
   async findAllIds() {
-    return await e.select(this.model);
+    return await e
+      .select(this.model)
+      .run(this.edgedbClient);
   }
 
   async findOneByIdProjection<
-    Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-    Scope extends $scopify<Element> &
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+    Scope extends $scopify<ModelTypeSet["__element__"]> &
     $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
+      [k in keyof ModelTypeSet]: k extends "__cardinality__"
       ? Cardinality.One
-      : Expr[k];
+      : ModelTypeSet[k];
     }>,
   >(
     id: string,
     shape: (scope: Scope) => Readonly<Shape>,
   ) {
     return await e
-      .select(this.model, (model) => ({
-        ...shape,
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-      }))
+      .select(this.model, shape)
       .run(this.edgedbClient);
   }
 
-
-  async select<
-    Expr extends ModelTypeSet,
-    Modifiers extends SelectModifiers,
-  >(
-    modifiers: (expr: Expr) => Readonly<Modifiers>,
-  ) {
-    return await e.select(this.model, (model) => ({
-      ...modifiers,
-    })).run(this.edgedbClient);
-  }
-
   async find<
-    Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-    Scope extends $scopify<Element> &
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+    Scope extends $scopify<ModelTypeSet["__element__"]> &
     $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
+      [k in keyof ModelTypeSet]: k extends "__cardinality__"
       ? Cardinality.One
-      : Expr[k];
+      : ModelTypeSet[k];
     }>,
   >(
     shape: (scope: Scope) => Readonly<Shape>,
@@ -122,10 +105,17 @@ export class CrudService {
   }
 
   async findManyByIdsWithProjection<
-    Expr extends ModelTypeSet,
-    Element extends Expr['__element__'],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-  >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>) {
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+    Scope extends $scopify<ModelTypeSet["__element__"]> &
+    $linkPropify<{
+      [k in keyof ModelTypeSet]: k extends "__cardinality__"
+      ? Cardinality.One
+      : ModelTypeSet[k];
+    }>
+  >(
+    ids: string[],
+    shape: (scope: Scope) => Readonly<Omit<Shape, 'filter_single'>>
+  ) {
     const query = e.select(this.model, (model) => ({
       ...shape,
       filter: e.op(
@@ -186,14 +176,12 @@ export class CrudService {
   }
 
   async findPaginate<
-    Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-    Scope extends $scopify<Element> &
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+    Scope extends $scopify<ModelTypeSet["__element__"]> &
     $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
+      [k in keyof ModelTypeSet]: k extends "__cardinality__"
       ? Cardinality.One
-      : Expr[k];
+      : ModelTypeSet[k];
     }>,
   >(
     shape: (scope: Scope) => Readonly<Shape>,
@@ -223,18 +211,16 @@ export class CrudService {
   }
 
   async findOneByIdProjectionPaginate<
-    Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-    Scope extends $scopify<Element> &
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+    Scope extends $scopify<ModelTypeSet["__element__"]> &
     $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
+      [k in keyof ModelTypeSet]: k extends "__cardinality__"
       ? Cardinality.One
-      : Expr[k];
-    }>,
+      : ModelTypeSet[k];
+    }>
   >(
     id: string,
-    shape: (scope: Scope) => Readonly<Shape>,
+    shape: (scope: Scope) => Readonly<Omit<Shape, 'filter_single'>>,
     take: number,
     skip: number,
   ) {
@@ -249,10 +235,19 @@ export class CrudService {
   }
 
   async findManyByIdsWithProjectionPaginate<
-    Expr extends ModelTypeSet,
-    Element extends Expr['__element__'],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-  >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>, take: number, skip: number) {
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+    Scope extends $scopify<ModelTypeSet["__element__"]> &
+    $linkPropify<{
+      [k in keyof ModelTypeSet]: k extends "__cardinality__"
+      ? Cardinality.One
+      : ModelTypeSet[k];
+    }>
+  >(
+    ids: string[],
+    shape: (scope: Scope) => Readonly<Omit<Shape, 'filter_single'>>,
+    take: number,
+    skip: number
+  ) {
     const query = e.select(this.model, (model) => ({
       ...shape,
       filter: e.op(
