@@ -2,7 +2,6 @@ import { Client } from 'edgedb';
 import e from 'dbschema/edgeql-js';
 import {
   Expression,
-  setToTsType,
   type $scopify,
 } from 'dbschema/edgeql-js/typesystem';
 import {
@@ -12,7 +11,9 @@ import {
 import { insert, InsertShape } from '../../../dbschema/edgeql-js/insert';
 import { $expr_PathNode, $linkPropify } from '../../../dbschema/edgeql-js/path';
 import { Cardinality } from 'dbschema/edgeql-js/reflection';
-import { $Pet, $PetλShape, Pet, User } from '../../../dbschema/edgeql-js/modules/default';
+import {
+  Pet,
+} from '../../../dbschema/edgeql-js/modules/default';
 import { UpdateShape } from '../../../dbschema/edgeql-js/update';
 import type * as _std from '../../../dbschema/edgeql-js/modules/std';
 
@@ -26,11 +27,15 @@ type ModelShape = ModelTypeSet['__element__']['__pointers__'];
 
 // Specifics
 type BackLinks = {
-  [K in keyof ModelShape as K extends `<${string}[${string}]` ? K : never]: ModelShape[K];
+  [K in keyof ModelShape as K extends `<${string}[${string}]`
+  ? K
+  : never]: ModelShape[K];
 };
 
 type NumericFields = {
-  [K in keyof ModelShape]: ModelShape[K]['target'] extends _std.$number ? K : never;
+  [K in keyof ModelShape]: ModelShape[K]['target'] extends _std.$number
+  ? K
+  : never;
 }[keyof ModelShape];
 
 // Computed
@@ -46,238 +51,80 @@ export class CrudService {
     protected readonly model: Model,
   ) { }
 
-  async findAll(): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (m) => ({
-      ...m['*'],
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findOneById(id: string): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findAllIds(): RunReturnType<typeof expr> {
-    const expr = e.select(this.model);
-    return await expr.run(this.edgedbClient);
-  }
-
-  async select<
-    Expr extends ModelTypeSet,
-    Modifiers extends SelectModifiers,
-  >(modifiers: (expr: Expr) => Readonly<Modifiers>): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      ...modifiers,
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
   async find<
     Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-    Scope extends $scopify<Element> &
-    $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
-      ? Cardinality.One
-      : Expr[k];
-    }>,
-  >(shape: (scope: Scope) => Readonly<Shape>): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      ...shape,
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findManyByIds(ids: string[]): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
-          model.id,
-          'in',
-          e.array_unpack(e.literal(e.array(e.str), ids)),
-        ),
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findOneByIdProjection<
-    Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-    Scope extends $scopify<Element> &
-    $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
-      ? Cardinality.One
-      : Expr[k];
-    }>,
-  >(id: string, shape: (scope: Scope) => Readonly<Shape>): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...shape,
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findManyByIdsWithProjection<
-    Expr extends ModelTypeSet,
     Element extends Expr['__element__'],
     Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-  >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      ...shape,
-      filter: e.op(
-        model.id,
-        'in',
-        e.array_unpack(e.literal(e.array(e.str), ids)),
-      ),
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findByBackLink(backlink: keyof BackLinks, id: string): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
-          model[backlink]['id'],
-          '=',
-          e.uuid(id),
-        ),
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-
-  async findAllPaginate(take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (m) => ({
-        ...m['*'],
-        limit: take,
-        offset: skip,
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findAllIdsPaginate(take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...model,
-        limit: take,
-        offset: skip,
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async selectPaginate<
-    Expr extends ModelTypeSet,
-    Modifiers extends SelectModifiers,
-  >(modifiers: (expr: Expr) => Readonly<Modifiers>, take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      ...modifiers,
-      limit: take,
-      offset: skip,
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findPaginate<
-    Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
     Scope extends $scopify<Element> &
     $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
+      [k in keyof Expr]: k extends '__cardinality__'
       ? Cardinality.One
       : Expr[k];
     }>,
-  >(shape: (scope: Scope) => Readonly<Shape>, take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      ...shape,
-      limit: take,
-      offset: skip,
-    }));
-    return await expr.run(this.edgedbClient);
-  }
+  >(
+    options?: {
+      id?: string;
+      ids?: string[];
+      backlink?: keyof BackLinks;
+      backlinkId?: string;
+      shape?: (scope: Scope) => Readonly<Shape>;
+      take?: number;
+      skip?: number;
+      filter?: (model: Scope) => SelectModifiers['filter'];
+      filter_single?: (model: Scope) => SelectModifiers['filter_single'];
+    },
+  ): RunReturnType<typeof expr> {
+    options = options || {};
 
-  async findManyByIdsPaginate(ids: string[], take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
+    const expr = e.select(this.model, (model) => {
+      const selection: any = {};
+
+      // Projection
+      if (options.shape) {
+        Object.assign(selection, options.shape);
+      } else {
+        selection['...'] = model['*'];
+      }
+
+      // Filters
+      if (options.id) {
+        selection.filter_single = e.op(model.id, '=', e.uuid(options.id));
+      } else if (options.ids) {
+        selection.filter = e.op(
           model.id,
           'in',
-          e.array_unpack(e.literal(e.array(e.str), ids)),
-        ),
-        limit: take,
-        offset: skip,
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findOneByIdProjectionPaginate<
-    Expr extends ModelTypeSet,
-    Element extends Expr["__element__"],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-    Scope extends $scopify<Element> &
-    $linkPropify<{
-      [k in keyof Expr]: k extends "__cardinality__"
-      ? Cardinality.One
-      : Expr[k];
-    }>,
-  >(id: string, shape: (scope: Scope) => Readonly<Shape>, take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...shape,
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-        limit: take,
-        offset: skip,
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findManyByIdsWithProjectionPaginate<
-    Expr extends ModelTypeSet,
-    Element extends Expr['__element__'],
-    Shape extends objectTypeToSelectShape<Element> & SelectModifiers<Element>,
-  >(ids: string[], shape: Readonly<Omit<Shape, 'filter_single'>>, take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      ...shape,
-      filter: e.op(
-        model.id,
-        'in',
-        e.array_unpack(e.literal(e.array(e.str), ids)),
-      ),
-      limit: take,
-      offset: skip,
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async findByBackLinkPaginate(backlink: keyof BackLinks, id: string, take: number, skip: number): RunReturnType<typeof expr> {
-    const expr = e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
-          model[backlink]['id'],
+          e.array_unpack(e.literal(e.array(e.str), options.ids)),
+        );
+      } else if (options.backlink && options.backlinkId) {
+        selection.filter = e.op(
+          model[options.backlink]['id'],
           '=',
-          e.uuid(id),
-        ),
-        limit: take,
-        offset: skip,
-      }));
+          e.uuid(options.backlinkId),
+        );
+      } else if (options.filter_single) {
+        selection.filter_single = options.filter_single;
+      } else if (options.filter) {
+        selection.filter = options.filter;
+      }
+
+      // Pagination
+      if (options.take !== undefined) {
+        selection.limit = options.take;
+      }
+      if (options.skip !== undefined) {
+        selection.offset = options.skip;
+      }
+
+      return selection;
+    });
+
     return await expr.run(this.edgedbClient);
   }
 
   async count(
-    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
+    filter?: (
+      model: $scopify<ModelTypeSet['__element__']>,
+    ) => SelectModifiers['filter'],
   ): Promise<number> {
     const expr = e.select(this.model, (model) => ({
       filter: filter ? filter(model) : undefined,
@@ -286,7 +133,9 @@ export class CrudService {
   }
 
   async exists(
-    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
+    filter?: (
+      model: $scopify<ModelTypeSet['__element__']>,
+    ) => SelectModifiers['filter'],
   ): Promise<boolean> {
     const expr = e.select(this.model, (model) => ({
       filter: filter ? filter(model) : undefined,
@@ -295,129 +144,144 @@ export class CrudService {
     return count > 0;
   }
 
+  async adjust(
+    id: string,
+    field: NumericFields,
+    value: number,
+    operator: '+' | '-',
+  ): RunReturnType<typeof expr> {
+    const expr = e.update(this.model, (model) => ({
+      filter_single: e.op(model.id, '=', e.uuid(id)),
+      set: {
+        [field]: e.op(model[field], operator, value),
+      },
+    }));
+
+    return await expr.run(this.edgedbClient);
+  }
+
   async increment(
     id: string,
     field: NumericFields,
     value: number = 1,
-  ): RunReturnType<typeof expr> {
-    const expr = e
-      .update(this.model, (model) => ({
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-        set: {
-          [field]: e.op(model[field], '+', value),
-        },
-      }));
-    return await expr.run(this.edgedbClient);
+  ) {
+    return this.adjust(id, field, value, '+');
   }
 
   async decrement(
     id: string,
     field: NumericFields,
     value: number = 1,
-  ): RunReturnType<typeof expr> {
-    const expr = e
-      .update(this.model, (model) => ({
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-        set: {
-          [field]: e.op(model[field], '-', value),
-        },
-      }));
-    return await expr.run(this.edgedbClient);
+  ) {
+    return this.adjust(id, field, value, '-');
   }
 
-  async sum(
+  async aggregate(
     field: NumericFields,
-    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
+    operation: 'sum' | 'min' | 'max',
+    filter?: (
+      model: $scopify<ModelTypeSet['__element__']>,
+    ) => SelectModifiers['filter'],
   ): RunReturnType<typeof expr> {
     const expr = e.select(this.model, (model) => ({
       filter: filter ? filter(model) : undefined,
-      value: e.sum(model[field]),
+      value:
+        operation === 'sum'
+          ? e.sum(model[field])
+          : operation === 'min'
+            ? e.min(model[field])
+            : e.max(model[field]),
     }));
     return await expr.run(this.edgedbClient);
   }
 
-  async min(
-    field: NumericFields,
-    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
-  ): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      filter: filter ? filter(model) : undefined,
-      value: e.min(model[field]),
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async max(
-    field: NumericFields,
-    filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
-  ): RunReturnType<typeof expr> {
-    const expr = e.select(this.model, (model) => ({
-      filter: filter ? filter(model) : undefined,
-      value: e.max(model[field]),
-    }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async update<
-    Shape extends {
-      filter?: SelectModifiers['filter'];
-      filter_single?: SelectModifiers<ModelTypeSet['__element__']>['filter_single'];
+  async update(
+    options: {
+      id?: string;
+      ids?: string[];
+      filter?: (
+        model: $scopify<ModelTypeSet['__element__']>,
+      ) => SelectModifiers['filter'];
+      filter_single?: (
+        model: $scopify<ModelTypeSet['__element__']>,
+      ) => SelectModifiers['filter_single'];
       set: UpdateShape<ModelTypeSet>;
     },
-  >(shape: (
-    scope: $scopify<ModelTypeSet['__element__']>,
-  ) => Readonly<Shape>): RunReturnType<typeof expr> {
-    const expr = e.update(this.model, shape);
-    return await expr.run(this.edgedbClient);
-  }
-
-  async updateMany(
-    filter: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter'],
-    set: UpdateShape<ModelTypeSet>,
   ): RunReturnType<typeof expr> {
-    const expr = e
-      .update(this.model, (model) => ({
-        filter: filter(model),
-        set,
-      }));
+    const expr = e.update(this.model, (model) => {
+      const updateObj: any = {
+        set: options.set,
+      };
+
+      if (options.id) {
+        updateObj.filter_single = e.op(model.id, '=', e.uuid(options.id));
+      } else if (options.ids) {
+        updateObj.filter = e.op(
+          model.id,
+          'in',
+          e.array_unpack(e.literal(e.array(e.str), options.ids)),
+        );
+      } else if (options.filter_single) {
+        updateObj.filter_single = options.filter_single(model);
+      } else if (options.filter) {
+        updateObj.filter = options.filter(model);
+      }
+
+      return updateObj;
+    });
+
     return await expr.run(this.edgedbClient);
   }
 
   async insert(
-    data: InsertShape<ModelTypeSet['__element__']>,
+    data:
+      | InsertShape<ModelTypeSet['__element__']>
+      | InsertShape<ModelTypeSet['__element__']>[],
+  ) {
+    if (Array.isArray(data)) {
+      // Handle insertMany
+      const inserts = data.map((d) => e.insert(this.model, d));
+      const expr = e.for(e.set(...inserts), (item) => item);
+      return await expr.run(this.edgedbClient);
+    } else {
+      // Handle single insert
+      const expr = e.insert(this.model, data);
+      return await expr.run(this.edgedbClient);
+    }
+  }
+
+  async delete(
+    options: {
+      id?: string;
+      ids?: string[];
+      filter?: (
+        model: $scopify<ModelTypeSet['__element__']>,
+      ) => SelectModifiers['filter'];
+      filter_single?: (
+        model: $scopify<ModelTypeSet['__element__']>,
+      ) => SelectModifiers['filter_single'];
+    },
   ): RunReturnType<typeof expr> {
-    const expr = e.insert(this.model, data);
-    return await expr.run(this.edgedbClient);
-  }
+    const expr = e.delete(this.model, (model) => {
+      const deleteObj: any = {};
 
-  async insertMany(
-    data: InsertShape<ModelTypeSet['__element__']>[],
-  ): RunReturnType<typeof expr> {
-    const inserts = data.map((d) => e.insert(this.model, d));
-    // By iterating inside your query using e.for, you’re guaranteed everything will happen in a single query.
-    const expr = e.for(e.set(...inserts), (item) => {
-      return item;
-    });
-    return await expr.run(this.edgedbClient);
-  }
-
-  async delete(id: string): RunReturnType<typeof expr> {
-    const expr = e
-      .delete(this.model, (model) => ({
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-      }));
-    return await expr.run(this.edgedbClient);
-  }
-
-  async deleteMany(ids: string[]): RunReturnType<typeof expr> {
-    const expr = e
-      .delete(this.model, (model) => ({
-        filter: e.op(
+      if (options.id) {
+        deleteObj.filter_single = e.op(model.id, '=', e.uuid(options.id));
+      } else if (options.ids) {
+        deleteObj.filter = e.op(
           model.id,
           'in',
-          e.array_unpack(e.literal(e.array(e.str), ids)),
-        ),
-      }));
+          e.array_unpack(e.literal(e.array(e.str), options.ids)),
+        );
+      } else if (options.filter_single) {
+        deleteObj.filter_single = options.filter_single(model);
+      } else if (options.filter) {
+        deleteObj.filter = options.filter(model);
+      }
+
+      return deleteObj;
+    });
+
     return await expr.run(this.edgedbClient);
   }
 }
