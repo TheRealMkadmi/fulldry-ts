@@ -15,8 +15,6 @@ export class PetService {
   }
 
   async getAll() {
-    return this.repository.findOneByIdProjection("test", (m) => ({
-      ...m['*']
-    }))
+    return this.repository.findOneById("test")
   }
 }
