@@ -42,6 +42,12 @@ export class PetRepository {
     return await query.run(this.edgedbClient);
   }
 
+  async findAllIds() {
+    return await e
+      .select(this.model)
+      .run(this.edgedbClient);
+  }
+
   async findOneById(id: string) {
     return await e
       .select(this.model, (model) => ({
@@ -50,13 +56,16 @@ export class PetRepository {
       }))
       .run(this.edgedbClient);
   }
-
-  async findAllIds() {
+  async findOneByIdPaginate(id: string, offset: number, limit: number) {
     return await e
-      .select(this.model)
+      .select(this.model, (model) => ({
+        ...model['*'],
+        filter_single: e.op(model.id, '=', e.uuid(id)),
+        limit,
+        offset
+      }))
       .run(this.edgedbClient);
   }
-
   async findOneByIdProjection<
     Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>,
     Scope extends $scopify<ModelTypeSet["__element__"]> &
@@ -74,6 +83,31 @@ export class PetRepository {
         ...shape(m),
         filter_single: e.op(m.id, "=", id),
       }))
+      .run(this.edgedbClient);
+  }
+
+  async findOneByIdProjectionPaginate<
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>,
+    Scope extends $scopify<ModelTypeSet["__element__"]> &
+    $linkPropify<{
+      [k in keyof ModelTypeSet]: k extends "__cardinality__"
+      ? Cardinality.One
+      : ModelTypeSet[k];
+    }>
+  >(
+    id: string,
+    shape: (scope: Scope) => Readonly<Omit<Shape, 'filter_single'>>,
+    limit: number,
+    offset: number,
+  ) {
+    const wrappedShape = (m: Scope) => ({
+      ...shape(m),
+      filter_single: e.op(m.id, '=', e.uuid(id)),
+      limit,
+      offset,
+    });
+    return await e
+      .select(this.model, wrappedShape)
       .run(this.edgedbClient);
   }
 
@@ -200,30 +234,7 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
-  async findOneByIdProjectionPaginate<
-    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>,
-    Scope extends $scopify<ModelTypeSet["__element__"]> &
-    $linkPropify<{
-      [k in keyof ModelTypeSet]: k extends "__cardinality__"
-      ? Cardinality.One
-      : ModelTypeSet[k];
-    }>
-  >(
-    id: string,
-    shape: (scope: Scope) => Readonly<Omit<Shape, 'filter_single'>>,
-    limit: number,
-    offset: number,
-  ) {
-    const wrappedShape = (m: Scope) => ({
-      ...shape(m),
-      filter_single: e.op(m.id, '=', e.uuid(id)),
-      limit,
-      offset,
-    });
-    return await e
-      .select(this.model, wrappedShape)
-      .run(this.edgedbClient);
-  }
+
 
   async findManyByIdsWithProjectionPaginate<
     Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
