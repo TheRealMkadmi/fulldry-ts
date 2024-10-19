@@ -1,10 +1,18 @@
 import { Client } from 'edgedb';
-import e from 'dbschema/edgeql-js';
+import e, { type $infer } from 'dbschema/edgeql-js';
 import {
+  computeObjectShape,
+  computeTsTypeCard,
+  ObjectType,
+  setToTsType,
   type $scopify,
 } from 'dbschema/edgeql-js/typesystem';
 import {
+  $expr_Select,
+  ComputeSelectCardinality,
+  normaliseShape,
   objectTypeToSelectShape,
+  SelectModifierNames,
   SelectModifiers,
 } from 'dbschema/edgeql-js/select';
 import { InsertShape } from '../../../dbschema/edgeql-js/insert';
@@ -19,6 +27,7 @@ type Model = typeof Pet;
 type ExtractTypeSet<T> = T extends $expr_PathNode<infer U, any> ? U : never;
 type ModelTypeSet = ExtractTypeSet<Model>;
 type ModelShape = ModelTypeSet['__element__']['__pointers__']
+type ModelName = ModelTypeSet['__element__']['__name__'];
 
 type BackLinks = {
   [K in keyof ModelShape as K extends `<${string}[${string}]` ? K : never]: ModelShape[K];
@@ -28,44 +37,55 @@ type NumericFields = {
   [K in keyof ModelShape]: ModelShape[K]['target'] extends _std.$number ? K : never;
 }[keyof ModelShape];
 
+
+// Select results
+const selectResults = e.select(Pet, (m) => ({ ...m['*'], filter_single: e.op(m.id, '=', e.uuid('dummy')) }));
+type CompleteProjection = $infer<typeof selectResults>;
+
+type ShapedSelect<
+  Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+  SelectShape extends normaliseShape<Shape, SelectModifierNames>
+> = $expr_Select<{
+  __element__: ObjectType<ModelName, ModelShape, SelectShape>
+  __cardinality__: ComputeSelectCardinality<ModelTypeSet, Pick<Shape, SelectModifierNames>>;
+}>;
+
+
 export class PetRepository {
   protected readonly model: Model = Pet;
   constructor(
     protected readonly edgedbClient: Client,
   ) { }
 
-  async findAll() {
-    const query = e
+  async findAll(limit?: number, offset?: number) {
+    return await e
       .select(this.model, (m) => ({
         ...m['*'],
-      }));
-    return await query.run(this.edgedbClient);
-  }
-
-  async findAllIds() {
-    return await e
-      .select(this.model)
-      .run(this.edgedbClient);
-  }
-
-  async findOneById(id: string) {
-    return await e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-      }))
-      .run(this.edgedbClient);
-  }
-  async findOneByIdPaginate(id: string, offset: number, limit: number) {
-    return await e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter_single: e.op(model.id, '=', e.uuid(id)),
         limit,
-        offset
+        offset,
       }))
       .run(this.edgedbClient);
   }
+
+  async findAllIds(limit?: number, offset?: number) {
+    return await e
+      .select(this.model, (model) => ({
+        ...model,
+        limit,
+        offset,
+      }))
+      .run(this.edgedbClient);
+  }
+
+  async findOneById(id: string): Promise<CompleteProjection> {
+    return await e
+      .select(this.model, (model) => ({
+        ...model['*'],
+        filter_single: e.op(model.id, '=', e.uuid(id)),
+      }))
+      .run(this.edgedbClient);
+  }
+
   async findOneByIdProjection<
     Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>,
     Scope extends $scopify<ModelTypeSet["__element__"]> &
@@ -78,37 +98,14 @@ export class PetRepository {
     id: string,
     shape: (scope: Scope) => Readonly<Shape>,
   ) {
-    return await e
+    type k = ShapedSelect<Shape, normaliseShape<Shape, SelectModifierNames>>;
+
+    const select: k = e
       .select(this.model, (m: Scope) => ({
         ...shape(m),
-        filter_single: e.op(m.id, "=", id),
-      }))
-      .run(this.edgedbClient);
-  }
-
-  async findOneByIdProjectionPaginate<
-    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>,
-    Scope extends $scopify<ModelTypeSet["__element__"]> &
-    $linkPropify<{
-      [k in keyof ModelTypeSet]: k extends "__cardinality__"
-      ? Cardinality.One
-      : ModelTypeSet[k];
-    }>
-  >(
-    id: string,
-    shape: (scope: Scope) => Readonly<Omit<Shape, 'filter_single'>>,
-    limit: number,
-    offset: number,
-  ) {
-    const wrappedShape = (m: Scope) => ({
-      ...shape(m),
-      filter_single: e.op(m.id, '=', e.uuid(id)),
-      limit,
-      offset,
-    });
-    return await e
-      .select(this.model, wrappedShape)
-      .run(this.edgedbClient);
+        // filter_single: e.op(m.id, "=", id),
+      }));
+    return await select.run(this.edgedbClient);
   }
 
   async find<
@@ -177,25 +174,6 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
-  async findAllPaginate(limit: number, offset: number) {
-    return await e
-      .select(this.model, (m) => ({
-        ...m['*'],
-        limit: limit,
-        offset: offset,
-      }))
-      .run(this.edgedbClient);
-  }
-
-  async findAllIdsPaginate(limit: number, offset: number) {
-    return await e
-      .select(this.model, (model) => ({
-        ...model,
-        limit: limit,
-        offset: offset,
-      }))
-      .run(this.edgedbClient);
-  }
 
   async findPaginate<
     Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & Omit<SelectModifiers<ModelTypeSet["__element__"]>, 'limit' | 'offset'>,

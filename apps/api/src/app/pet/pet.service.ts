@@ -15,8 +15,6 @@ export class PetService {
   }
 
   async getAll() {
-    return this.repository.findOneByIdProjection("test", (m) => ({
-      name: true
-    }))
+    return this.repository.findByBackLink("<pets[is User]", "test")
   }
 }

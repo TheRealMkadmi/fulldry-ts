@@ -177,13 +177,13 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="npm.bun run api standalone" />
-      <item itemvalue="npm.turbo run api" />
-      <item itemvalue="npm.turbo build nest-edgedb" />
-      <item itemvalue="npm.api &gt; generate:edgeql" />
       <item itemvalue="npm.api &gt; dev:debug" />
+      <item itemvalue="npm.api &gt; generate:edgeql" />
       <item itemvalue="npm.api &gt; generate:interfaces" />
       <item itemvalue="npm.build:libs" />
+      <item itemvalue="npm.bun run api standalone" />
+      <item itemvalue="npm.turbo build nest-edgedb" />
+      <item itemvalue="npm.turbo run api" />
     </list>
     <recent_temporary>
       <list>
