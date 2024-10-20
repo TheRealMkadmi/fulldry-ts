@@ -17,7 +17,7 @@ import {
 } from 'dbschema/edgeql-js/select';
 import { InsertShape } from '../../../dbschema/edgeql-js/insert';
 import { $expr_PathNode, $linkPropify } from '../../../dbschema/edgeql-js/path';
-import { Cardinality } from 'dbschema/edgeql-js/reflection';
+import { $expr_Operator, Cardinality } from 'dbschema/edgeql-js/reflection';
 import { Pet } from '../../../dbschema/edgeql-js/modules/default';
 import { UpdateShape } from '../../../dbschema/edgeql-js/update';
 import type * as _std from '../../../dbschema/edgeql-js/modules/std';
@@ -44,10 +44,17 @@ type CompleteProjection = $infer<typeof selectResults>;
 
 type ShapedSelect<
   Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
-  SelectShape extends normaliseShape<Shape, SelectModifierNames>
 > = $expr_Select<{
-  __element__: ObjectType<ModelName, ModelShape, SelectShape>
+  __element__: ObjectType<ModelName, ModelShape, normaliseShape<Shape, SelectModifierNames>>
   __cardinality__: ComputeSelectCardinality<ModelTypeSet, Pick<Shape, SelectModifierNames>>;
+}>;
+
+type FilterSingleType = Readonly<{
+  filter_single: $expr_Operator<_std.$bool, Cardinality.One>;
+}>;
+
+type FilterType = Readonly<{
+  filter: $expr_Operator<_std.$bool, Cardinality.Many>;
 }>;
 
 
@@ -98,12 +105,17 @@ export class PetRepository {
     id: string,
     shape: (scope: Scope) => Readonly<Shape>,
   ) {
-    type k = ShapedSelect<Shape, normaliseShape<Shape, SelectModifierNames>>;
+
+    const wrappedShape: (scope: Scope) => Readonly<Shape & FilterSingleType> = (scope: Scope) => ({
+      ...shape(scope),
+      filter_single: e.op(scope.id, '=', e.uuid(id)),
+    });
+
+    type k = ShapedSelect<Shape & FilterSingleType>;
 
     const select: k = e
       .select(this.model, (m: Scope) => ({
-        ...shape(m),
-        // filter_single: e.op(m.id, "=", id),
+        ...wrappedShape(m),
       }));
     return await select.run(this.edgedbClient);
   }
