@@ -15,6 +15,10 @@ export class PetService {
   }
 
   async getAll() {
-    return this.repository.findByBackLink("<pets[is User]", "test")
+    const r = await this.repository.findOneByIdProjection("test", (pet) => ({
+      name: true,
+      id: true,
+    }));
+    return r;
   }
 }

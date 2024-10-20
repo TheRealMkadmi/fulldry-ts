@@ -57,6 +57,12 @@ type FilterType = Readonly<{
   filter: $expr_Operator<_std.$bool, Cardinality.Many>;
 }>;
 
+type computeSelectShapeResult<
+  Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+> = computeTsTypeCard<
+  computeObjectShape<ModelShape, normaliseShape<Shape>>,
+  ComputeSelectCardinality<ModelTypeSet, Pick<Shape, SelectModifierNames>>
+>
 
 export class PetRepository {
   protected readonly model: Model = Pet;
@@ -104,20 +110,20 @@ export class PetRepository {
   >(
     id: string,
     shape: (scope: Scope) => Readonly<Shape>,
-  ) {
+  ): Promise<computeSelectShapeResult<Shape & FilterSingleType>> {
 
     const wrappedShape: (scope: Scope) => Readonly<Shape & FilterSingleType> = (scope: Scope) => ({
       ...shape(scope),
       filter_single: e.op(scope.id, '=', e.uuid(id)),
     });
 
-    type k = ShapedSelect<Shape & FilterSingleType>;
-
-    const select: k = e
+    const select = e
       .select(this.model, (m: Scope) => ({
         ...wrappedShape(m),
       }));
-    return await select.run(this.edgedbClient);
+    const retVal = await select.run(this.edgedbClient);
+
+    return retVal;
   }
 
   async find<
