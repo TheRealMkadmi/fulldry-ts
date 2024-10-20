@@ -4,7 +4,6 @@ import {
   computeObjectShape,
   computeTsTypeCard,
   ObjectType,
-  setToTsType,
   type $scopify,
 } from 'dbschema/edgeql-js/typesystem';
 import {
@@ -54,8 +53,17 @@ type FilterSingleType = Readonly<{
 }>;
 
 type FilterType = Readonly<{
-  filter: $expr_Operator<_std.$bool, Cardinality.Many>;
+  filter: $expr_Operator<_std.$bool, Cardinality.One>; // .One? Wtf?
 }>;
+
+type PaginateType = Readonly<{
+  limit: number;
+  offset: number;
+}>;
+
+type ModelIdentity = {
+  id: string;
+} | null;
 
 type computeSelectShapeResult<
   Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
@@ -83,7 +91,6 @@ export class PetRepository {
   async findAllIds(limit?: number, offset?: number) {
     return await e
       .select(this.model, (model) => ({
-        ...model,
         limit,
         offset,
       }))
@@ -136,7 +143,7 @@ export class PetRepository {
     }>,
   >(
     shape: (scope: Scope) => Readonly<Shape>,
-  ) {
+  ): Promise<computeSelectShapeResult<Shape>> {
     return await e.select(this.model, shape).run(this.edgedbClient);
   }
 
@@ -164,9 +171,9 @@ export class PetRepository {
   >(
     ids: string[],
     shape: (scope: Scope) => Readonly<Shape>
-  ) {
+  ): Promise<computeSelectShapeResult<Shape & FilterType>> {
 
-    const wrappedShape = (scope: Scope) => ({
+    const wrappedShape: (scope: Scope) => Readonly<Shape & FilterType> = (scope: Scope) => ({
       ...shape(scope),
       filter: e.op(
         scope.id,
@@ -179,7 +186,7 @@ export class PetRepository {
     return await query.run(this.edgedbClient);
   }
 
-  async findByBackLink(backlink: keyof BackLinks, id: string) {
+  async findByBackLink(backlink: keyof BackLinks, id: string): Promise<CompleteProjection[]> {
     return await e
       .select(this.model, (model) => ({
         ...model['*'],
@@ -205,8 +212,10 @@ export class PetRepository {
     shape: (scope: Scope) => Readonly<Shape>,
     limit: number,
     offset: number,
-  ) {
-    const wrappedShape = (m: Scope) => ({
+  ): Promise<computeSelectShapeResult<Shape & PaginateType>> {
+
+
+    const wrappedShape: (scope: Scope) => Readonly<Shape & PaginateType> = (m: Scope) => ({
       ...shape(m),
       limit,
       offset,
@@ -215,7 +224,7 @@ export class PetRepository {
     return await e.select(this.model, wrappedShape).run(this.edgedbClient);
   }
 
-  async findManyByIdsPaginate(ids: string[], limit: number, offset: number) {
+  async findManyByIdsPaginate(ids: string[], limit: number, offset: number): Promise<CompleteProjection[]> {
     return await e
       .select(this.model, (model) => ({
         ...model['*'],
@@ -242,11 +251,11 @@ export class PetRepository {
     }>
   >(
     ids: string[],
-    shape: (scope: Scope) => Readonly<Omit<Shape, 'filter_single'>>,
+    shape: (scope: Scope) => Readonly<Shape>,
     limit: number,
     offset: number
-  ) {
-    const wrappedShape = (m: Scope) => ({
+  ): Promise<computeSelectShapeResult<Shape & PaginateType & FilterType>> {
+    const wrappedShape: (scope: Scope) => Readonly<Shape & PaginateType & FilterType> = (m: Scope) => ({
       ...shape(m),
       filter: e.op(
         m.id,
@@ -261,7 +270,7 @@ export class PetRepository {
     return await query.run(this.edgedbClient);
   }
 
-  async findByBackLinkPaginate(backlink: keyof BackLinks, id: string, limit: number, offset: number) {
+  async findByBackLinkPaginate(backlink: keyof BackLinks, id: string, limit: number, offset: number): Promise<CompleteProjection[]> {
     return await e
       .select(this.model, (model) => ({
         ...model['*'],
@@ -324,28 +333,40 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
-  async sum(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+  async sum(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']): Promise<number | null> {
     const query = e.select(this.model, (model) => ({
       filter: filter ? filter(model) : undefined,
       value: e.sum(model[field]),
     }));
-    return await query.run(this.edgedbClient);
+    const retVal = await query.run(this.edgedbClient);
+    if (retVal.length === 0) {
+      return null;
+    }
+    return retVal[0].value;
   }
 
-  async min(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+  async min(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']): Promise<number | null> {
     const query = e.select(this.model, (model) => ({
       filter: filter ? filter(model) : undefined,
       value: e.min(model[field]),
     }));
-    return await query.run(this.edgedbClient);
+    const retVal = await query.run(this.edgedbClient);
+    if (retVal.length === 0) {
+      return null;
+    }
+    return retVal[0].value as number;
   }
 
-  async max(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']) {
+  async max(field: NumericFields, filter?: (model: $scopify<ModelTypeSet['__element__']>) => SelectModifiers['filter']): Promise<number | null> {
     const query = e.select(this.model, (model) => ({
       filter: filter ? filter(model) : undefined,
       value: e.max(model[field]),
     }));
-    return await query.run(this.edgedbClient);
+    const retVal = await query.run(this.edgedbClient);
+    if (retVal.length === 0) {
+      return null;
+    }
+    return retVal[0].value as number;
   }
 
   async update<
@@ -378,13 +399,13 @@ export class PetRepository {
   async insert(
     data: InsertShape<ModelTypeSet['__element__']
     >,
-  ) {
+  ): Promise<Exclude<ModelIdentity, null>> {
     return await e.insert(this.model, data).run(this.edgedbClient);
   }
 
   async insertMany(
     data: InsertShape<ModelTypeSet['__element__']>[],
-  ) {
+  ): Promise<Exclude<ModelIdentity, null>[]> {
     const inserts = data.map((d) => e.insert(this.model, d));
     // By iterating inside your query using e.for, you’re guaranteed everything will happen in a single query.
     const query = e.for(e.set(...inserts), (item) => {
@@ -394,7 +415,7 @@ export class PetRepository {
     return await query.run(this.edgedbClient);
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<ModelIdentity> {
     return await e
       .delete(this.model, (model) => ({
         filter_single: e.op(model.id, '=', e.uuid(id)),
@@ -402,7 +423,7 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
-  async deleteMany(ids: string[]) {
+  async deleteMany(ids: string[]): Promise<ModelIdentity[]> {
     return await e
       .delete(this.model, (model) => ({
         filter: e.op(
