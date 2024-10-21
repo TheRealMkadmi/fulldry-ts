@@ -15,10 +15,8 @@ export class PetService {
   }
 
   async getAll() {
-    const r = await this.repository.findOneByIdProjection("test", (pet) => ({
-      name: true,
-      id: true,
-    }));
-    return r;
+    const pets = await this.repository.paginate((m) => ({
+      name: true
+    }), 1, 5);
   }
 }

@@ -16,7 +16,7 @@ import {
 } from 'dbschema/edgeql-js/select';
 import { InsertShape } from '../../../dbschema/edgeql-js/insert';
 import { $expr_PathNode, $linkPropify } from '../../../dbschema/edgeql-js/path';
-import { $expr_Operator, Cardinality } from 'dbschema/edgeql-js/reflection';
+import { $expr_Literal, $expr_Operator, Cardinality } from 'dbschema/edgeql-js/reflection';
 import { Pet } from '../../../dbschema/edgeql-js/modules/default';
 import { UpdateShape } from '../../../dbschema/edgeql-js/update';
 import type * as _std from '../../../dbschema/edgeql-js/modules/std';
@@ -37,9 +37,12 @@ type NumericFields = {
   [K in keyof ModelShape]: ModelShape[K]['target'] extends _std.$number ? K : never;
 }[keyof ModelShape];
 
-type ModelSelectShape = objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>;
+type ModelSelectShape =
+  objectTypeToSelectShape<ModelTypeSet["__element__"]> &
+  SelectModifiers<ModelTypeSet["__element__"]>;
 
-type ModelScope = $scopify<ModelTypeSet["__element__"]> &
+type ModelScope =
+  $scopify<ModelTypeSet["__element__"]> &
   $linkPropify<{
     [K in keyof ModelTypeSet]: K extends "__cardinality__"
     ? Cardinality.One
@@ -56,9 +59,11 @@ type FilterType = Readonly<{
   filter: $expr_Operator<_std.$bool, Cardinality.One>;
 }>;
 
+type Int64 = $expr_Literal<Omit<_std.$number, "__tsconsttype__"> & { __tsconsttype__: number; }>;
+
 type PaginateType = Readonly<{
-  limit: number;
-  offset: number;
+  limit: Int64;
+  offset: Int64;
 }>;
 
 type ModelIdentity = {
@@ -66,13 +71,25 @@ type ModelIdentity = {
 } | null;
 
 type computeSelectShapeResult<
-  Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]> & SelectModifiers<ModelTypeSet["__element__"]>,
+  Shape extends ModelSelectShape,
 > = computeTsTypeCard<
   computeObjectShape<ModelShape, normaliseShape<Shape, SelectModifierNames>>,
   ComputeSelectCardinality<ModelTypeSet, Pick<Shape, SelectModifierNames>>
 >;
 
 type FilterCallable = (model: ModelScope) => SelectModifiers['filter'];
+
+export interface PaginateResult<
+  Shape extends ModelSelectShape,
+> {
+  items: computeSelectShapeResult<Shape & FilterType>[];
+  itemsCount: number;
+  totalItems: number;
+  currentPage: number;
+  totalPages: number;
+  limit: number;
+  offset: number;
+}
 
 // Select Results
 const selectResults = e.select(Pet, (m) => ({
@@ -117,7 +134,7 @@ export class PetRepository {
   }
 
   async findOneByIdProjection<
-    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>,
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>, // no select modifiers allowed
     Scope extends ModelScope,
   >(
     id: string,
@@ -192,85 +209,38 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
-  async findPaginate<
+  async paginate<
     Shape extends Omit<ModelSelectShape, 'limit' | 'offset'>,
     Scope extends ModelScope,
   >(
     shape: (scope: Scope) => Readonly<Shape>,
     limit: number,
     offset: number,
-  ): Promise<computeSelectShapeResult<Shape & PaginateType>> {
-    const wrappedShape: (scope: Scope) => Readonly<Shape & PaginateType> = (m: Scope) => ({
-      ...shape(m),
-      limit,
-      offset,
+  ): Promise<PaginateResult<Shape>> {
+
+    const _limit = e.int64(limit);
+    const _offset = e.int64(offset);
+    const allItemsMatchingFilter = e.select(this.model, shape);
+
+    const pageItems = e.select(allItemsMatchingFilter, (model: Scope) => ({
+      ...shape(model),
+      limit: _limit,
+      offset: _offset,
+    }));
+
+    const query = e.select({
+      items: pageItems,
+      itemsCount: e.count(pageItems),
+      totalItems: e.count(allItemsMatchingFilter),
+      currentPage: e.math.ceil(e.op(_offset, '/', _limit)),
+      totalPages: e.math.ceil(e.op(e.count(allItemsMatchingFilter), '/', _limit)),
+      limit: _limit,
+      offset: _offset,
     });
 
-    return await e.select(this.model, wrappedShape).run(this.edgedbClient);
+    return await query.run(this.edgedbClient) as unknown as PaginateResult<Shape>;
   }
 
-  async findManyByIdsPaginate(
-    ids: string[],
-    limit: number,
-    offset: number
-  ): Promise<CompleteProjection[]> {
-    return await e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
-          model.id,
-          'in',
-          e.array_unpack(e.literal(e.array(e.str), ids)),
-        ),
-        limit,
-        offset,
-      }))
-      .run(this.edgedbClient);
-  }
-
-  async findManyByIdsWithProjectionPaginate<
-    Shape extends ModelSelectShape,
-    Scope extends ModelScope,
-  >(
-    ids: string[],
-    shape: (scope: Scope) => Readonly<Shape>,
-    limit: number,
-    offset: number
-  ): Promise<computeSelectShapeResult<Shape & PaginateType & FilterType>> {
-    const wrappedShape: (scope: Scope) => Readonly<Shape & PaginateType & FilterType> = (m: Scope) => ({
-      ...shape(m),
-      filter: e.op(
-        m.id,
-        'in',
-        e.array_unpack(e.literal(e.array(e.str), ids)),
-      ),
-      limit,
-      offset,
-    });
-
-    const query = e.select(this.model, wrappedShape);
-    return await query.run(this.edgedbClient);
-  }
-
-  async findByBackLinkPaginate(
-    backlink: keyof BackLinks,
-    id: string,
-    limit: number,
-    offset: number
-  ): Promise<CompleteProjection[]> {
-    return await e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
-          model[backlink]['id'],
-          '=',
-          e.uuid(id),
-        ),
-        limit,
-        offset,
-      }))
-      .run(this.edgedbClient);
-  }
 
   async count(
     filter?: FilterCallable,
