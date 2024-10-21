@@ -210,20 +210,21 @@ export class PetRepository {
   }
 
   async paginate<
-    Shape extends Omit<ModelSelectShape, 'limit' | 'offset'>,
+    Shape extends ModelSelectShape,
     Scope extends ModelScope,
   >(
-    shape: (scope: Scope) => Readonly<Shape>,
+    shape: (scope: Scope) => Readonly<Omit<Shape, "filter_single" | "limit" | "offset">>,
     limit: number,
     offset: number,
-  ): Promise<PaginateResult<Shape>> {
-
+  ): Promise<PaginateResult<Omit<Shape, SelectModifierNames>>> {
     const _limit = e.int64(limit);
     const _offset = e.int64(offset);
+
+
     const allItemsMatchingFilter = e.select(this.model, shape);
 
-    const pageItems = e.select(allItemsMatchingFilter, (model: Scope) => ({
-      ...shape(model),
+    const pageItems = e.select(this.model, (m) => ({
+      ...shape(m as Scope),
       limit: _limit,
       offset: _offset,
     }));
@@ -238,7 +239,8 @@ export class PetRepository {
       offset: _offset,
     });
 
-    return await query.run(this.edgedbClient) as unknown as PaginateResult<Shape>;
+    const r = await query.run(this.edgedbClient);
+    return r as unknown as PaginateResult<Omit<Shape, SelectModifierNames>>;
   }
 
 
