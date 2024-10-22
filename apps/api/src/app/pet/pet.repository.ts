@@ -106,7 +106,7 @@ export class PetRepository {
   ) { }
 
   // Find Methods
-  async findAll(limit?: number, offset?: number) {
+  async findAll(limit?: number, offset?: number): Promise<CompleteProjection[]> {
     return await e
       .select(this.model, (m) => ({
         ...m['*'],
@@ -116,7 +116,7 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
-  async findAllIds(limit?: number, offset?: number) {
+  async findAllIds(limit?: number, offset?: number): Promise<ModelIdentity[]> {
     return await e
       .select(this.model, () => ({
         limit,
@@ -125,73 +125,71 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
-  async findOneById(id: string): Promise<CompleteProjection> {
-    return await e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-      }))
-      .run(this.edgedbClient);
-  }
-
-  async findOneByIdProjection<
-    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>, // no select modifiers allowed
+  async findOneById(id: string): Promise<CompleteProjection>;
+  async findOneById<
+    Shape extends objectTypeToSelectShape<ModelTypeSet["__element__"]>,
     Scope extends ModelScope,
   >(
     id: string,
     shape: (scope: Scope) => Readonly<Shape>,
-  ): Promise<computeSelectShapeResult<Shape & FilterSingleType>> {
-    const wrappedShape: (scope: Scope) => Readonly<Shape & FilterSingleType> = (scope: Scope) => ({
-      ...shape(scope),
-      filter_single: e.op(scope.id, '=', e.uuid(id)),
-    });
-
-    const select = e.select(this.model, wrappedShape);
-    const retVal = await select.run(this.edgedbClient);
-
-    return retVal;
+  ): Promise<computeSelectShapeResult<Shape & FilterSingleType>>;
+  async findOneById(
+    id: string,
+    shape?: (scope: any) => any,
+  ): Promise<any> {
+    if (shape) {
+      const wrappedShape = (scope: any) => ({
+        ...shape(scope),
+        filter_single: e.op(scope.id, '=', e.uuid(id)),
+      });
+      const select = e.select(this.model, wrappedShape);
+      const retVal = await select.run(this.edgedbClient);
+      return retVal;
+    } else {
+      return await e
+        .select(this.model, (model) => ({
+          ...model['*'],
+          filter_single: e.op(model.id, '=', e.uuid(id)),
+        }))
+        .run(this.edgedbClient);
+    }
   }
 
-  async find<
-    Shape extends ModelSelectShape,
-    Scope extends ModelScope,
-  >(
-    shape: (scope: Scope) => Readonly<Shape>,
-  ): Promise<computeSelectShapeResult<Shape>> {
-    return await e.select(this.model, shape).run(this.edgedbClient);
-  }
-
-  async findManyByIds(ids: string[]) {
-    return await e
-      .select(this.model, (model) => ({
-        ...model['*'],
-        filter: e.op(
-          model.id,
-          'in',
-          e.array_unpack(e.literal(e.array(e.str), ids)),
-        ),
-      }))
-      .run(this.edgedbClient);
-  }
-
-  async findManyByIdsWithProjection<
+  async findManyByIds(ids: string[]): Promise<CompleteProjection[]>;
+  async findManyByIds<
     Shape extends Omit<ModelSelectShape, 'filter'>,
     Scope extends ModelScope,
   >(
     ids: string[],
     shape: (scope: Scope) => Readonly<Shape>
-  ): Promise<computeSelectShapeResult<Shape & FilterType>> {
-    const wrappedShape: (scope: Scope) => Readonly<Shape & FilterType> = (scope: Scope) => ({
-      ...shape(scope),
-      filter: e.op(
-        scope.id,
-        'in',
-        e.array_unpack(e.literal(e.array(e.str), ids)),
-      ),
-    });
-
-    const query = e.select(this.model, wrappedShape);
-    return await query.run(this.edgedbClient);
+  ): Promise<computeSelectShapeResult<Shape & FilterType>>;
+  async findManyByIds(
+    ids: string[],
+    shape?: (scope: any) => any,
+  ): Promise<any> {
+    if (shape) {
+      const wrappedShape = (scope: any) => ({
+        ...shape(scope),
+        filter: e.op(
+          scope.id,
+          'in',
+          e.array_unpack(e.literal(e.array(e.str), ids)),
+        ),
+      });
+      const query = e.select(this.model, wrappedShape);
+      return await query.run(this.edgedbClient);
+    } else {
+      return await e
+        .select(this.model, (model) => ({
+          ...model['*'],
+          filter: e.op(
+            model.id,
+            'in',
+            e.array_unpack(e.literal(e.array(e.str), ids)),
+          ),
+        }))
+        .run(this.edgedbClient);
+    }
   }
 
   async findByBackLink(
@@ -210,6 +208,16 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
+  async find<
+    Shape extends ModelSelectShape,
+    Scope extends ModelScope,
+  >(
+    shape: (scope: Scope) => Readonly<Shape>,
+  ): Promise<computeSelectShapeResult<Shape>> {
+    return await e.select(this.model, shape).run(this.edgedbClient);
+  }
+
+  // Pagination Method
   async paginate<
     Shape extends ModelSelectShape,
     Scope extends ModelScope,
@@ -220,7 +228,6 @@ export class PetRepository {
   ): Promise<PaginateResult<computeSelectShapeResult<Shape & FilterSingleType>>> {
     const _limit = e.int64(limit);
     const _offset = e.int64(offset);
-
 
     const allItemsMatchingFilter = e.select(this.model, shape);
 
@@ -241,11 +248,10 @@ export class PetRepository {
     });
 
     const r = await query.run(this.edgedbClient);
-    // Weird type assertion. I know. It's not to make the compiler happy, but to make the user happy.
     return r as unknown as PaginateResult<computeSelectShapeResult<Shape & FilterSingleType>>;
   }
 
-
+  // Aggregation Methods
   async count(
     filter?: FilterCallable,
   ): Promise<number> {
@@ -298,6 +304,7 @@ export class PetRepository {
     return retVal.length === 0 ? null : retVal[0].value as number | null;
   }
 
+  // Update Methods
   async update<
     Shape extends {
       filter?: SelectModifiers['filter'];
@@ -324,40 +331,48 @@ export class PetRepository {
       .run(this.edgedbClient);
   }
 
+  // Insert Methods
   async insert(
     data: InsertShape<ModelTypeSet['__element__']>,
-  ): Promise<Exclude<ModelIdentity, null>> {
-    return await e.insert(this.model, data).run(this.edgedbClient);
-  }
-
-  async insertMany(
+  ): Promise<Exclude<ModelIdentity, null>>;
+  async insert(
     data: InsertShape<ModelTypeSet['__element__']>[],
-  ): Promise<Exclude<ModelIdentity, null>[]> {
-    const query = e.set(...data.map(d => e.insert(this.model, d)));
-    return await query.run(this.edgedbClient);
+  ): Promise<Exclude<ModelIdentity, null>[]>;
+  async insert(
+    data: InsertShape<ModelTypeSet['__element__']> | InsertShape<ModelTypeSet['__element__']>[],
+  ): Promise<any> {
+    if (Array.isArray(data)) {
+      const query = e.set(...data.map(d => e.insert(this.model, d)));
+      return await query.run(this.edgedbClient);
+    } else {
+      return await e.insert(this.model, data).run(this.edgedbClient);
+    }
   }
 
-
-  async delete(id: string): Promise<ModelIdentity> {
-    return await e
-      .delete(this.model, (model) => ({
-        filter_single: e.op(model.id, '=', e.uuid(id)),
-      }))
-      .run(this.edgedbClient);
+  // Delete Methods
+  async delete(id: string): Promise<ModelIdentity>;
+  async delete(ids: string[]): Promise<ModelIdentity[]>;
+  async delete(idOrIds: string | string[]): Promise<any> {
+    if (Array.isArray(idOrIds)) {
+      return await e
+        .delete(this.model, (model) => ({
+          filter: e.op(
+            model.id,
+            'in',
+            e.array_unpack(e.literal(e.array(e.str), idOrIds)),
+          ),
+        }))
+        .run(this.edgedbClient);
+    } else {
+      return await e
+        .delete(this.model, (model) => ({
+          filter_single: e.op(model.id, '=', e.uuid(idOrIds)),
+        }))
+        .run(this.edgedbClient);
+    }
   }
 
-  async deleteMany(ids: string[]): Promise<ModelIdentity[]> {
-    return await e
-      .delete(this.model, (model) => ({
-        filter: e.op(
-          model.id,
-          'in',
-          e.array_unpack(e.literal(e.array(e.str), ids)),
-        ),
-      }))
-      .run(this.edgedbClient);
-  }
-
+  // GroupBy Method
   async groupBy<
     Shape extends {
       by?: {
