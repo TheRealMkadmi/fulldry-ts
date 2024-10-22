@@ -5,7 +5,6 @@ import {
   computeObjectShape,
   computeTsTypeCard,
   Expression,
-  ObjectType,
   TypeSet,
   type $scopify,
 } from 'dbschema/edgeql-js/typesystem';
@@ -19,7 +18,7 @@ import {
 } from 'dbschema/edgeql-js/select';
 import { InsertShape } from '../../../dbschema/edgeql-js/insert';
 import { $expr_PathNode, $linkPropify } from '../../../dbschema/edgeql-js/path';
-import { $expr_Literal, $expr_Operator, Cardinality } from 'dbschema/edgeql-js/reflection';
+import { $expr_Operator, Cardinality } from 'dbschema/edgeql-js/reflection';
 import { Pet } from '../../../dbschema/edgeql-js/modules/default';
 import { UpdateShape } from '../../../dbschema/edgeql-js/update';
 import type * as _std from '../../../dbschema/edgeql-js/modules/std';
@@ -30,7 +29,6 @@ type Model = typeof Pet;
 type ExtractTypeSet<T> = T extends $expr_PathNode<infer U, any> ? U : never;
 type ModelTypeSet = ExtractTypeSet<Model>;
 type ModelShape = ModelTypeSet['__element__']['__pointers__'];
-type ModelName = ModelTypeSet['__element__']['__name__'];
 
 type BackLinks = {
   [K in keyof ModelShape as K extends `<${string}[${string}]` ? K : never]: ModelShape[K];
@@ -62,13 +60,6 @@ type FilterType = Readonly<{
   filter: $expr_Operator<_std.$bool, Cardinality.One>;
 }>;
 
-type Int64 = $expr_Literal<Omit<_std.$number, "__tsconsttype__"> & { __tsconsttype__: number; }>;
-
-type PaginateType = Readonly<{
-  limit: Int64;
-  offset: Int64;
-}>;
-
 type ModelIdentity = {
   id: string;
 } | null;
@@ -82,15 +73,7 @@ type computeSelectShapeResult<
 
 type FilterCallable = (model: ModelScope) => SelectModifiers['filter'];
 
-export interface PaginateResult<T> {
-  items: T;
-  itemsCount: number;
-  totalItems: number;
-  currentPage: number;
-  totalPages: number;
-  limit: number;
-  offset: number;
-}
+
 
 // Select Results
 const selectResults = e.select(Pet, (m) => ({

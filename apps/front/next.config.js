@@ -4,7 +4,12 @@
  */
 await import("./src/env.js");
 
+const withTM = require("next-transpile-modules")([
+  // Add "math-helpers" to this array:
+  "math-helpers",
+]);
+
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = withTM({});
 
 export default config;
