@@ -333,11 +333,10 @@ export class PetRepository {
   async insertMany(
     data: InsertShape<ModelTypeSet['__element__']>[],
   ): Promise<Exclude<ModelIdentity, null>[]> {
-    const inserts = data.map((d) => e.insert(this.model, d));
-    const query = e.for(e.set(...inserts), (item) => item);
-
+    const query = e.set(...data.map(d => e.insert(this.model, d)));
     return await query.run(this.edgedbClient);
   }
+
 
   async delete(id: string): Promise<ModelIdentity> {
     return await e
