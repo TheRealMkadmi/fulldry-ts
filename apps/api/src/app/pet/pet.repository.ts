@@ -1,9 +1,12 @@
 import { Client } from 'edgedb';
 import e, { type $infer } from 'dbschema/edgeql-js';
 import {
+  BaseType,
   computeObjectShape,
   computeTsTypeCard,
+  Expression,
   ObjectType,
+  TypeSet,
   type $scopify,
 } from 'dbschema/edgeql-js/typesystem';
 import {
@@ -79,10 +82,8 @@ type computeSelectShapeResult<
 
 type FilterCallable = (model: ModelScope) => SelectModifiers['filter'];
 
-export interface PaginateResult<
-  Shape extends ModelSelectShape,
-> {
-  items: computeSelectShapeResult<Shape & FilterType>[];
+export interface PaginateResult<T> {
+  items: T;
   itemsCount: number;
   totalItems: number;
   currentPage: number;
@@ -213,10 +214,10 @@ export class PetRepository {
     Shape extends ModelSelectShape,
     Scope extends ModelScope,
   >(
-    shape: (scope: Scope) => Readonly<Omit<Shape, "filter_single" | "limit" | "offset">>,
+    shape: (scope: Scope) => Readonly<Shape>,
     limit: number,
     offset: number,
-  ): Promise<PaginateResult<Omit<Shape, SelectModifierNames>>> {
+  ): Promise<PaginateResult<computeSelectShapeResult<Shape & FilterSingleType>>> {
     const _limit = e.int64(limit);
     const _offset = e.int64(offset);
 
@@ -240,7 +241,8 @@ export class PetRepository {
     });
 
     const r = await query.run(this.edgedbClient);
-    return r as unknown as PaginateResult<Omit<Shape, SelectModifierNames>>;
+    // Weird type assertion. I know. It's not to make the compiler happy, but to make the user happy.
+    return r as unknown as PaginateResult<computeSelectShapeResult<Shape & FilterSingleType>>;
   }
 
 
@@ -355,5 +357,23 @@ export class PetRepository {
         ),
       }))
       .run(this.edgedbClient);
+  }
+
+  async groupBy<
+    Shape extends {
+      by?: {
+        [k: string]: Expression<
+          TypeSet<BaseType, Cardinality.One | Cardinality.AtMostOne>
+        >
+      }
+    } & objectTypeToSelectShape<
+      ModelTypeSet["__element__"]
+    >,
+  >(
+    getter: (arg: $scopify<ModelTypeSet["__element__"]>) => Readonly<Shape>,
+  ) {
+    const query = e.group(this.model, getter);
+    const result = await query.run(this.edgedbClient);
+    return result;
   }
 }

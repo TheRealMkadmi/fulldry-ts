@@ -15,8 +15,9 @@ export class PetService {
   }
 
   async getAll() {
-    const pets = await this.repository.paginate((m) => ({
-      name: true
+    const k = await this.repository.paginate((m) => ({
+      ...m['*']
     }), 1, 5);
+
   }
 }
