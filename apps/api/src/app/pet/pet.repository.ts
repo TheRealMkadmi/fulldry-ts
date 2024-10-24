@@ -22,9 +22,11 @@ import { $expr_Operator, Cardinality } from 'dbschema/edgeql-js/reflection';
 import { Pet } from '../../../dbschema/edgeql-js/modules/default';
 import { UpdateShape } from '../../../dbschema/edgeql-js/update';
 import type * as _std from '../../../dbschema/edgeql-js/modules/std';
+import { PaginateResult } from 'common';
 
 // Type Declarations
 type Model = typeof Pet;
+
 
 type ExtractTypeSet<T> = T extends $expr_PathNode<infer U, any> ? U : never;
 type ModelTypeSet = ExtractTypeSet<Model>;
@@ -50,7 +52,6 @@ type ModelScope =
     : ModelTypeSet[K];
   }>;
 
-type CompleteProjection = $infer<typeof selectResults>;
 
 type FilterSingleType = Readonly<{
   filter_single: $expr_Operator<_std.$bool, Cardinality.One>;
@@ -73,6 +74,7 @@ type computeSelectShapeResult<
 
 type FilterCallable = (model: ModelScope) => SelectModifiers['filter'];
 
+type CompleteProjection = computeSelectShapeResult<Model['*'] & FilterSingleType>
 
 
 // Select Results

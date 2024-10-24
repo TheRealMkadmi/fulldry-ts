@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { EDGE_DB_CLIENT } from 'nest-edgedb';
 import { type Client } from 'edgedb';
 import { PetRepository } from './pet.repository';
-
+import e from 'dbschema/edgeql-js';
 
 @Injectable()
 export class PetService {
@@ -16,7 +16,8 @@ export class PetService {
 
   async getAll() {
     const k = await this.repository.paginate((m) => ({
-      ...m['*']
+      filter: e.op(m.age, '>', 5),
+      age: true
     }), 1, 5);
 
   }
