@@ -91,6 +91,8 @@ type UnionToIntersection<U> =
 // Defines how each function overload will look
 type Render<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>>;
 
+// Generalized Render signature
+type RenderSignature<OneOfPossibleOptions> = <T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>>;
 
 // Recursively converts a tuple of options into a union of overloads
 type TupleToUnion<
@@ -105,12 +107,12 @@ type TupleToUnion<
 // Converts the union of overloads into an intersection type
 type $overloadMethod<
   TupleOfPossibleOptions,
-  RenderFn extends Render<any>
+  RenderFn extends RenderSignature<any>
 > = UnionToIntersection<
   TupleToUnion<TupleOfPossibleOptions, RenderFn>
 >;
 
-type SelectOverloads<T> = $overloadMethod<ModelTuple, Render<T>>;
+type SelectOverloads<T> = $overloadMethod<ModelTuple, RenderSignature<T>>;
 
 // @ts-expect-error
 const select: SelectOverloads<T> = async <T extends $expr_PathNode>(model: T) => {
