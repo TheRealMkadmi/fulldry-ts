@@ -3,6 +3,8 @@ import { EDGE_DB_CLIENT } from 'nest-edgedb';
 import { type Client } from 'edgedb';
 import { PetRepository } from './pet.repository';
 import e from 'dbschema/edgeql-js';
+import { BaseRepository, ValidNameSpaceKeys } from './base.repository';
+import { Pet } from 'dbschema/edgeql-js/modules/default';
 
 @Injectable()
 export class PetService {
@@ -20,5 +22,13 @@ export class PetService {
       age: true
     }), 1, 5);
 
+  }
+
+  async test() {
+
+
+    const nam = new BaseRepository<'Pet'>('Pet', this.client);
+
+    const k = await nam.findAll();
   }
 }

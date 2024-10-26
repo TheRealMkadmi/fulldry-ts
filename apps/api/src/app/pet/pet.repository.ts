@@ -77,12 +77,6 @@ type FilterCallable = (model: ModelScope) => SelectModifiers['filter'];
 type CompleteProjection = computeSelectShapeResult<Model['*'] & FilterSingleType>
 
 
-// Select Results
-const selectResults = e.select(Pet, (m) => ({
-  ...m['*'],
-  filter_single: e.op(m.id, '=', e.uuid('dummy')),
-}));
-
 export class PetRepository {
   protected readonly model: Model = Pet;
 
@@ -91,7 +85,7 @@ export class PetRepository {
   ) { }
 
   // Find Methods
-  async findAll(limit?: number, offset?: number): Promise<CompleteProjection[]> {
+  async findAll(limit?: number, offset?: number): Promise<computeSelectShapeResult<Model['*'] & FilterSingleType>[]> {
     return await e
       .select(this.model, (m) => ({
         ...m['*'],
