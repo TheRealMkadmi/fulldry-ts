@@ -85,34 +85,35 @@ type Models = typeof __defaultExports[keyof typeof __defaultExports];
 type ModelTuple = [typeof __defaultExports["User"], typeof __defaultExports["Pet"]];
 
 
-// typeHelpers.ts
-
-// Converts a union type to an intersection type
 type UnionToIntersection<U> =
   (U extends any ? (_: U) => void : never) extends ((_: infer I) => void) ? I : never;
 
 // Defines how each function overload will look
 type Render<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>>;
 
+
 // Recursively converts a tuple of options into a union of overloads
 type TupleToUnion<
-  TupleOfPossibleOptions
+  TupleOfPossibleOptions,
+  RenderFn
 > = TupleOfPossibleOptions extends [infer OneOfPossibleOptions, ...infer RestOfPossibleOptions]
-  ? Render<OneOfPossibleOptions> | TupleToUnion<RestOfPossibleOptions>
+  ? RenderFn extends Render<infer R>
+  ? Render<R & OneOfPossibleOptions> | TupleToUnion<RestOfPossibleOptions, RenderFn>
+  : never
   : never;
 
 // Converts the union of overloads into an intersection type
-type $overload<
-  TupleOfPossibleOptions
+type $overloadMethod<
+  TupleOfPossibleOptions,
+  RenderFn extends Render<any>
 > = UnionToIntersection<
-  TupleToUnion<TupleOfPossibleOptions>
+  TupleToUnion<TupleOfPossibleOptions, RenderFn>
 >;
 
-
-type SelectOverloads = $overload<ModelTuple>;
+type SelectOverloads<T> = $overloadMethod<ModelTuple, Render<T>>;
 
 // @ts-expect-error
-const select: SelectOverloads = async <T extends $expr_PathNode>(model: T) => {
+const select: SelectOverloads<T> = async <T extends $expr_PathNode>(model: T) => {
   return await e.select(model, (m: any) => ({
     ...m['*']
   })).run(client);
