@@ -72,7 +72,8 @@ type computeSelectShapeResult<
 type FilterCallable<M> = (model: ModelScope<M>) => SelectModifiers['filter'];
 
 
-type CompleteProjection<M extends $expr_PathNode> = computeSelectShapeResult<M, M['*'] & FilterSingleType>;
+type OneCompleteProjection<M extends $expr_PathNode> = computeSelectShapeResult<M, M['*'] & FilterSingleType>;
+type ManyCompleteProjections<M extends $expr_PathNode> = computeSelectShapeResult<M, M['*'] & FilterType>;
 
 
 // _________________________________
@@ -89,31 +90,35 @@ type UnionToIntersection<U> =
   (U extends any ? (_: U) => void : never) extends ((_: infer I) => void) ? I : never;
 
 // Defines how each function overload will look
-type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>[]>;
-type RenderFindOne<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>>;
+type RenderFindOne<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<OneCompleteProjection<T>>;
+type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<ManyCompleteProjections<T>>;
 
-// Recursively converts a tuple of options into a union of overloads
-type TupleToUnion<
-  TupleOfPossibleOptions,
-  RenderFn
+type RenderFunction<
+  Generics extends any[] = [],
+  Args extends any[] = [],
+  Return = any
+> = <G extends Generics, A extends Args>(...args: A) => Return;
+
+type ConvertTupleOfPossibleOptionsToOverloadsUnion<
+  TupleOfPossibleOptions extends readonly any[],
+  Render extends RenderFunction
 > = TupleOfPossibleOptions extends [infer OneOfPossibleOptions, ...infer RestOfPossibleOptions]
-  ? RenderFn extends RenderFindAll<infer R>
-  ? RenderFindAll<R & OneOfPossibleOptions> | TupleToUnion<RestOfPossibleOptions, RenderFn>
-  : never
+  ? | Render
+  | ConvertTupleOfPossibleOptionsToOverloadsUnion<RestOfPossibleOptions, Render>
   : never;
 
-// Converts the union of overloads into an intersection type
-type $overloadMethod<
-  TupleOfPossibleOptions,
-  RenderFn extends RenderFindAll<any>
+type ConvertTupleOfPossibleOptionsToOverloadsIntersection<
+  TupleOfPossibleOptions extends readonly any[],
+  Render
 > = UnionToIntersection<
-  TupleToUnion<TupleOfPossibleOptions, RenderFn>
+  ConvertTupleOfPossibleOptionsToOverloadsUnion<
+    TupleOfPossibleOptions,
+    Render
+  >
 >;
 
-
-
-type FindAllOverloads<T> = $overloadMethod<ModelTuple, RenderFindAll<T>>;
-type FindOneOverloads<T> = $overloadMethod<ModelTuple, RenderFindOne<T>>;
+type FindAllOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindAll<T>>;
+type FindOneOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindOne<T>>;
 
 // @ts-expect-error
 const findAll: FindAllOverloads<T> = async <T extends $expr_PathNode>(model: T) => {
