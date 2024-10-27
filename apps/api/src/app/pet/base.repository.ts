@@ -89,8 +89,6 @@ type ModelTuple = [typeof __defaultExports["User"], typeof __defaultExports["Pet
 type UnionToIntersection<U> =
   (U extends any ? (_: U) => void : never) extends ((_: infer I) => void) ? I : never;
 
-type RenderFindOne<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<OneCompleteProjection<T>>;
-type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<ManyCompleteProjections<T>>;
 
 type RenderFunction<
   Generics extends any[] = [],
@@ -116,8 +114,10 @@ type ConvertTupleOfPossibleOptionsToOverloadsIntersection<
   >
 >;
 
+// _____________
+
+type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => ManyCompleteProjections<T>;
 type FindAllOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindAll<T>>;
-type FindOneOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindOne<T>>;
 
 // @ts-expect-error
 const findAll: FindAllOverloads<T> = async <T extends $expr_PathNode>(model: T) => {
@@ -125,6 +125,11 @@ const findAll: FindAllOverloads<T> = async <T extends $expr_PathNode>(model: T) 
     ...m['*']
   })).run(client);
 }
+
+// _____________
+
+type RenderFindOne<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<OneCompleteProjection<T>>;
+type FindOneOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindOne<T>>;
 // @ts-expect-error
 const findOne: FindOneOverloads<T> = async <T extends $expr_PathNode>(model: T, id: string) => {
   return await e.select(model, (m: any) => ({
@@ -132,10 +137,17 @@ const findOne: FindOneOverloads<T> = async <T extends $expr_PathNode>(model: T, 
     filter_single: m.id.eq(id)
   })).run(client);
 }
+
+// _____________
+
+
+
+
 export const createRepository = <T>(model: T) => new class {
   async findAll() {
     return findAll(model);
   }
+
 }
 
 const test = async () => {
