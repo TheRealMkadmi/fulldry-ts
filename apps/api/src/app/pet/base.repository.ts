@@ -37,6 +37,8 @@ type ModelIdentity = {
   id: string;
 } | null;
 
+type ModelIdentityArray = Exclude<ModelIdentity, null>[];
+
 type ModelTypeSet<M> = M extends $expr_PathNode<infer U, any> ? U : never;
 
 type ModelShape<M> = ModelTypeSet<M>['__element__']['__pointers__'];
@@ -116,41 +118,17 @@ type ConvertTupleOfPossibleOptionsToOverloadsIntersection<
 
 // _____________
 
-type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => ManyCompleteProjections<T>;
+type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(client: Client, x: T) => Promise<ManyCompleteProjections<T>>;
 type FindAllOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindAll<T>>;
 
-// @ts-expect-error
-const findAll: FindAllOverloads<T> = async <T extends $expr_PathNode>(model: T) => {
-  return await e.select(model, (m: any) => ({
-    ...m['*']
-  })).run(client);
-}
-
-// _____________
-
-type RenderFindOne<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<OneCompleteProjection<T>>;
-type FindOneOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindOne<T>>;
-// @ts-expect-error
-const findOne: FindOneOverloads<T> = async <T extends $expr_PathNode>(model: T, id: string) => {
-  return await e.select(model, (m: any) => ({
-    ...m['*'],
-    filter_single: m.id.eq(id)
-  })).run(client);
-}
-
-// _____________
-
-
-
-
-export const createRepository = <T>(model: T) => new class {
-  async findAll() {
-    return findAll(model);
-  }
-
+const findAll: FindAllOverloads<Models> = async <T>(client: Client, model: T) => {
+  return await
+    e.select(model, (m: any) => ({
+      ...m['*']
+    }))
+      .run(client);
 }
 
 const test = async () => {
-  const test = createRepository(User);
-  const result = await test.findAll();
+  const pet = await findAll(client, Pet);
 }
