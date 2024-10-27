@@ -89,7 +89,6 @@ type ModelTuple = [typeof __defaultExports["User"], typeof __defaultExports["Pet
 type UnionToIntersection<U> =
   (U extends any ? (_: U) => void : never) extends ((_: infer I) => void) ? I : never;
 
-// Defines how each function overload will look
 type RenderFindOne<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<OneCompleteProjection<T>>;
 type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<ManyCompleteProjections<T>>;
 
@@ -133,9 +132,13 @@ const findOne: FindOneOverloads<T> = async <T extends $expr_PathNode>(model: T, 
     filter_single: m.id.eq(id)
   })).run(client);
 }
+export const createRepository = <T>(model: T) => new class {
+  async findAll() {
+    return findAll(model);
+  }
+}
 
 const test = async () => {
-  const users = await findAll(User);
-  const pets = await findAll(Pet);
-  const pet = await findOne(Pet);
+  const test = createRepository(User);
+  const result = await test.findAll();
 }
