@@ -89,39 +89,47 @@ type UnionToIntersection<U> =
   (U extends any ? (_: U) => void : never) extends ((_: infer I) => void) ? I : never;
 
 // Defines how each function overload will look
-type Render<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>>;
-
-// Generalized Render signature
-type RenderSignature<OneOfPossibleOptions> = <T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>>;
+type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>[]>;
+type RenderFindOne<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<CompleteProjection<T>>;
 
 // Recursively converts a tuple of options into a union of overloads
 type TupleToUnion<
   TupleOfPossibleOptions,
   RenderFn
 > = TupleOfPossibleOptions extends [infer OneOfPossibleOptions, ...infer RestOfPossibleOptions]
-  ? RenderFn extends Render<infer R>
-  ? Render<R & OneOfPossibleOptions> | TupleToUnion<RestOfPossibleOptions, RenderFn>
+  ? RenderFn extends RenderFindAll<infer R>
+  ? RenderFindAll<R & OneOfPossibleOptions> | TupleToUnion<RestOfPossibleOptions, RenderFn>
   : never
   : never;
 
 // Converts the union of overloads into an intersection type
 type $overloadMethod<
   TupleOfPossibleOptions,
-  RenderFn extends RenderSignature<any>
+  RenderFn extends RenderFindAll<any>
 > = UnionToIntersection<
   TupleToUnion<TupleOfPossibleOptions, RenderFn>
 >;
 
-type SelectOverloads<T> = $overloadMethod<ModelTuple, RenderSignature<T>>;
+
+
+type FindAllOverloads<T> = $overloadMethod<ModelTuple, RenderFindAll<T>>;
+type FindOneOverloads<T> = $overloadMethod<ModelTuple, RenderFindOne<T>>;
 
 // @ts-expect-error
-const select: SelectOverloads<T> = async <T extends $expr_PathNode>(model: T) => {
+const findAll: FindAllOverloads<T> = async <T extends $expr_PathNode>(model: T) => {
   return await e.select(model, (m: any) => ({
     ...m['*']
   })).run(client);
 }
+// @ts-expect-error
+const findOne: FindOneOverloads<T> = async <T extends $expr_PathNode>(model: T, id: string) => {
+  return await e.select(model, (m: any) => ({
+    ...m['*'],
+    filter_single: m.id.eq(id)
+  })).run(client);
+}
 
 const test = async () => {
-  const user = await select(User);
-  const pet = await select(Pet);
+  const user = await findAll(User);
+  const pet = await findOne(Pet);
 }
