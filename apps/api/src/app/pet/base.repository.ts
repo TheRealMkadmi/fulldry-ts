@@ -101,7 +101,7 @@ type RenderFunction<
 
 type ConvertTupleOfPossibleOptionsToOverloadsUnion<
   TupleOfPossibleOptions extends readonly any[],
-  Render extends RenderFunction
+  Render extends RenderFunction<any, any, any>
 > = TupleOfPossibleOptions extends [infer OneOfPossibleOptions, ...infer RestOfPossibleOptions]
   ? | Render
   | ConvertTupleOfPossibleOptionsToOverloadsUnion<RestOfPossibleOptions, Render>
@@ -109,7 +109,7 @@ type ConvertTupleOfPossibleOptionsToOverloadsUnion<
 
 type ConvertTupleOfPossibleOptionsToOverloadsIntersection<
   TupleOfPossibleOptions extends readonly any[],
-  Render
+  Render extends RenderFunction<any, any, any>
 > = UnionToIntersection<
   ConvertTupleOfPossibleOptionsToOverloadsUnion<
     TupleOfPossibleOptions,
@@ -135,6 +135,7 @@ const findOne: FindOneOverloads<T> = async <T extends $expr_PathNode>(model: T, 
 }
 
 const test = async () => {
-  const user = await findAll(User);
+  const users = await findAll(User);
+  const pets = await findAll(Pet);
   const pet = await findOne(Pet);
 }
