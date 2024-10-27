@@ -116,12 +116,13 @@ type ConvertTupleOfPossibleOptionsToOverloadsIntersection<
   >
 >;
 
+type $overload<TFunc extends RenderFunction<any, any, any>> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, TFunc>
+
+
 // _____________
 
 type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(client: Client, x: T) => Promise<ManyCompleteProjections<T>>;
-type FindAllOverloads<T> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, RenderFindAll<T>>;
-
-const findAll: FindAllOverloads<Models> = async <T>(client: Client, model: T) => {
+const findAll: $overload<RenderFindAll<Models>> = async <T>(client: Client, model: T) => {
   return await
     e.select(model, (m: any) => ({
       ...m['*']
@@ -129,6 +130,48 @@ const findAll: FindAllOverloads<Models> = async <T>(client: Client, model: T) =>
       .run(client);
 }
 
+// _____________
+
+type RenderFindAllIds<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(client: Client, x: T, limit?: number, offset?: number) => Promise<ModelIdentityArray>;
+const findAllIds: $overload<RenderFindAllIds<Models>> =
+  async <T>(client: Client, model: T, limit?: number, offset?: number) => {
+    return await e
+      .select(model, (m: any) => ({
+        ...m['*'],
+        limit,
+        offset,
+      }))
+      .run(client);
+  }
+
+// _____________
+
+type RenderFindByIds<OneOfPossibleOptions> = <
+  const T extends OneOfPossibleOptions & $expr_PathNode,
+>(client: Client, x: T, ids: string[]) => Promise<ManyCompleteProjections<T>>;
+
+const findByIds: $overload<RenderFindByIds<Models>> =
+  async <T>(client: Client, model: T, ids: string[]) => {
+    return await e
+      .select(model, (m: any) => ({
+        ...m['*'],
+        filter: e.op(
+          m.id,
+          'in',
+          e.array_unpack(e.literal(e.array(e.str), ids)),
+        ),
+      }))
+      .run(client);
+  }
+
+
+
+
+
 const test = async () => {
-  const pet = await findAll(client, Pet);
+  const pet = await findAll(client, User);
+  const petIds = await findAllIds(client, Pet, 10, 0);
+  const petByIds = await findByIds(client, Pet, ['1', '2']);
+
 }
+
