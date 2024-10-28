@@ -201,7 +201,7 @@ export class PetRepository {
     Shape extends ModelSelectShape,
     Scope extends ModelScope,
   >(
-    shape: (scope: Scope) => Readonly<Shape>,
+    shape: (scope: ModelScope) => Readonly<Shape>,
     limit: number,
     offset: number,
   ): Promise<PaginateResult<computeSelectShapeResult<Shape & FilterSingleType>>> {
@@ -211,7 +211,7 @@ export class PetRepository {
     const allItemsMatchingFilter = e.select(this.model, shape);
 
     const pageItems = e.select(this.model, (m) => ({
-      ...shape(m as Scope),
+      ...shape(m),
       limit: _limit,
       offset: _offset,
     }));
