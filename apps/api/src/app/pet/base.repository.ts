@@ -146,11 +146,11 @@ const findAllIds: $overload<RenderFindAllIds<Models>> =
 
 // _____________
 
-type RenderFindByIds<OneOfPossibleOptions> = <
+type RenderFindManyByIds<OneOfPossibleOptions> = <
   const T extends OneOfPossibleOptions & $expr_PathNode,
 >(client: Client, x: T, ids: string[]) => Promise<ManyCompleteProjections<T>>;
 
-const findByIds: $overload<RenderFindByIds<Models>> =
+const findManyByIds: $overload<RenderFindManyByIds<Models>> =
   async <T>(client: Client, model: T, ids: string[]) => {
     return await e
       .select(model, (m: any) => ({
@@ -164,14 +164,48 @@ const findByIds: $overload<RenderFindByIds<Models>> =
       .run(client);
   }
 
+// _____________
 
+type RenderFindOneById<OneOfPossibleOptions> = <
+  const T extends OneOfPossibleOptions & $expr_PathNode> (client: Client, x: T, id: string) => Promise<OneCompleteProjection<T>>;
+const findOneById: $overload<RenderFindOneById<Models>> =
+  async <T>(client: Client, model: T, id: string) => {
+    return await e
+      .select(model, (m: any) => ({
+        ...m['*'],
+        filter_single: e.op(m.id, '=', e.literal(e.str, id)),
+      }))
+      .run(client);
+  }
 
+// _____________
+
+type RenderFindOneByIdWithProjection<OneOfPossibleOptions> = <
+  const T extends OneOfPossibleOptions & $expr_PathNode,
+  Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>,
+  Scope extends ModelScope<T>
+>(client: Client, x: T, id: string, shape: (scope: Scope) => Readonly<Shape>) => Promise<computeSelectShapeResult<T, Shape & FilterSingleType>>;
+const findOneByIdWithProjection: $overload<RenderFindOneByIdWithProjection<Models>> =
+  async <T, Shape, Scope>(client: Client, model: T, id: string, shape: (scope: Scope) => Readonly<Shape>) => {
+    return await e
+      .select(model, (m: any) => ({
+        ...shape(m),
+        filter_single: e.op(m.id, '=', e.literal(e.str, id)),
+      }))
+      .run(client);
+  }
+
+// _____________
 
 
 const test = async () => {
   const pet = await findAll(client, User);
   const petIds = await findAllIds(client, Pet, 10, 0);
-  const petByIds = await findByIds(client, Pet, ['1', '2']);
+  const petByIds = await findManyByIds(client, Pet, ['1', '2']);
+  const petById = await findOneById(client, Pet, '1');
+  const petByIdWithProjection = await findOneByIdWithProjection(client, Pet, '1', (m) => ({
+    ...m['*'],
+  }));
 
 }
 
