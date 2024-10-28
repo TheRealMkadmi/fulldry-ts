@@ -27,6 +27,7 @@ import __defaultExports from 'dbschema/edgeql-js/modules/default';
 
 import { RenderFunction, ConvertTupleOfPossibleOptionsToOverloadsIntersection, ValuesTuple } from 'fulldry-utils';
 
+
 type FilterSingleType = Readonly<{
   filter_single: $expr_Operator<_std.$bool, Cardinality.One>;
 }>;

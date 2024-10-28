@@ -1,6 +1,8 @@
 // https://github.com/microsoft/TypeScript/issues/27808
 // "look at what they do to mimic a fraction of out power - C# -- Chobba"
 
+import { And, IsEqual } from 'type-fest';
+
 export type UnionToIntersection<U> =
     (U extends any ? (_: U) => void : never) extends ((_: infer I) => void) ? I : never;
 
@@ -27,3 +29,15 @@ export type ConvertTupleOfPossibleOptionsToOverloadsIntersection<
         Render
     >
 >;
+
+export type $overload<
+    TFunc extends RenderFunction<any, any, any>,
+    TAgainst extends readonly any[]
+> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<TAgainst, TFunc>
+
+// Example usage:
+declare type UnionOfYourObjects = 'a' | 'b' | 'c';
+declare type YourTupleOfObjects = ['a', 'b', 'c'];
+type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions>(x: T) => Promise<T>;
+const method: $overload<RenderFindAll<UnionOfYourObjects>, YourTupleOfObjects> = async <T>(x: T) => { return x; };
+
