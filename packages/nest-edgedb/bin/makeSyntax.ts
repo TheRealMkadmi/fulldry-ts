@@ -1,10 +1,14 @@
 import { syntax } from "@edgedb/generate/dist/FILES";
-import { writeFileSync } from "fs";
+import { mkdir, rm, writeFileSync } from "fs";
+import { cwd } from "process";
 
 const ts = syntax["ts"];
 
+const syntaxDir = "./syntax";
+
 for (const file of ts) {
     console.log(`Writing ${file.path}`);
-    writeFileSync(file.path, file.content)
+
+    writeFileSync(`${syntaxDir}/${file.path}`, file.content) // probably better with os.join
 }
 
