@@ -25,7 +25,7 @@ import { Pet, User } from 'dbschema/edgeql-js/modules/default';
 
 import __defaultExports from 'dbschema/edgeql-js/modules/default';
 
-// todo: remove the any's and replace with proper types, for now it's just for performance
+import { RenderFunction, ConvertTupleOfPossibleOptionsToOverloadsIntersection, ValuesTuple } from 'fulldry-utils';
 
 type FilterSingleType = Readonly<{
   filter_single: $expr_Operator<_std.$bool, Cardinality.One>;
@@ -82,48 +82,19 @@ type ManyCompleteProjections<M extends $expr_PathNode> = computeSelectShapeResul
 
 // _________________________________
 
-const client = {} as Client;
-
 type Exports = typeof __defaultExports;
 
 type Models = Exports[keyof Exports];
 
-type ValuesTuple<T, K extends readonly (keyof T)[]> = {
-  [I in keyof K]: K[I] extends keyof T ? T[K[I]] : never;
-};
+
 
 
 // Define the tuple of model types for the repository
 type ModelTuple = ValuesTuple<typeof __defaultExports, [keyof Exports]>;
 
 
-type UnionToIntersection<U> =
-  (U extends any ? (_: U) => void : never) extends ((_: infer I) => void) ? I : never;
 
 
-type RenderFunction<
-  Generics extends any[] = [],
-  Args extends any[] = [],
-  Return = any
-> = <G extends Generics, A extends Args>(...args: A) => Return;
-
-type ConvertTupleOfPossibleOptionsToOverloadsUnion<
-  TupleOfPossibleOptions extends readonly any[],
-  Render extends RenderFunction<any, any, any>
-> = TupleOfPossibleOptions extends [infer OneOfPossibleOptions, ...infer RestOfPossibleOptions]
-  ? | Render
-  | ConvertTupleOfPossibleOptionsToOverloadsUnion<RestOfPossibleOptions, Render>
-  : never;
-
-type ConvertTupleOfPossibleOptionsToOverloadsIntersection<
-  TupleOfPossibleOptions extends readonly any[],
-  Render extends RenderFunction<any, any, any>
-> = UnionToIntersection<
-  ConvertTupleOfPossibleOptionsToOverloadsUnion<
-    TupleOfPossibleOptions,
-    Render
-  >
->;
 
 type $overload<TFunc extends RenderFunction<any, any, any>> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, TFunc>
 

@@ -61,7 +61,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
-    "interface-to-class-converter": "workspace:*"
+    "interface-to-class-converter": "workspace:*",
+    "fulldry-utils": "workspace:*"
   },
   "jest": {
     "moduleFileExtensions": [

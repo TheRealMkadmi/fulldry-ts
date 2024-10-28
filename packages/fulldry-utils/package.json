@@ -1,0 +1,31 @@
+{
+  "name": "fulldry-utils",
+  "version": "0.0.1",
+  "main": "dist/fulldry-utils.cjs.js",
+  "module": "dist/fulldry-utils.esm.js",
+  "description": "Making ToyScript a bit easier",
+  "scripts": {
+    "build": "bun preconstruct build",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.25.6",
+    "@nestjs/common": "^10.3.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "edgedb": "^1.5.10"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/node": "^7.25.0",
+    "@babel/plugin-proposal-decorators": "^7.24.7",
+    "@babel/plugin-transform-runtime": "^7.25.4",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-typescript": "^7.24.7",
+    "@preconstruct/cli": "^2.8.7",
+    "babel-loader": "^9.1.3"
+  }
+}
