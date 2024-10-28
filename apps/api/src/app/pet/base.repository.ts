@@ -84,10 +84,17 @@ type ManyCompleteProjections<M extends $expr_PathNode> = computeSelectShapeResul
 
 const client = {} as Client;
 
-type Models = typeof __defaultExports[keyof typeof __defaultExports];
+type Exports = typeof __defaultExports;
+
+type Models = Exports[keyof Exports];
+
+type ValuesTuple<T, K extends readonly (keyof T)[]> = {
+  [I in keyof K]: K[I] extends keyof T ? T[K[I]] : never;
+};
+
 
 // Define the tuple of model types for the repository
-type ModelTuple = [typeof __defaultExports["User"], typeof __defaultExports["Pet"]];
+type ModelTuple = ValuesTuple<typeof __defaultExports, [keyof Exports]>;
 
 
 type UnionToIntersection<U> =
