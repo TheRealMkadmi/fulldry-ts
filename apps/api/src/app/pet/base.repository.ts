@@ -102,7 +102,7 @@ type $overload<TFunc extends RenderFunction<any, any, any>> = ConvertTupleOfPoss
 
 // _____________
 
-type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(client: Client, x: T) => Promise<ManyCompleteProjections<T>>;
+type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions>(client: Client, x: T) => Promise<ManyCompleteProjections<T>>;
 const findAll: $overload<RenderFindAll<Models>> = async <T>(client: Client, model: T) => {
   return await
     e.select(model, (m: any) => ({
@@ -562,6 +562,17 @@ const groupBy: $overload<RenderGroupBy<Models>> =
   };
 
 
+const client = {} as Client;
+
+
+const createRepository = <T extends Models>(client: Client, model: T) => {
+  return {
+    findAll: async () => await findAll(client, model),
+    findAllIds: async (limit?: number, offset?: number) => await findAllIds(client, model, limit, offset),
+  }
+}
+
+const petRepository = createRepository(client, Pet);
 
 const test = async () => {
   const pet = await findAll(client, User);
@@ -570,7 +581,16 @@ const test = async () => {
   const petById = await findOneById(client, Pet, '1');
   const petByIdWithProjection = await findOneByIdWithProjection(client, Pet, '1', (m) => ({
     name: true,
+    id: true
   }));
+  const userByPet = await findByBackLink(client, Pet, '<pets[is User]', '1');
 
+  const rk = await paginate(client, Pet, (m) => ({
+    name: true
+  }), 10, 0);
+
+  const repo = createRepository(client, Pet);
+
+  const r = await repo.findAll();
 }
 
