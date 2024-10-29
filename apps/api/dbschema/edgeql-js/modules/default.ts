@@ -44,8 +44,3 @@ const __defaultExports: __defaultExports = {
 };
 export default __defaultExports;
 
-// get tuple of all exports that extend $expr_PathNode
-type ObjectToTuple<T> = {
-  [K in keyof T]: T[K] extends $.$expr_PathNode<any, any> ? T[K] : never;
-};
-type ExportTuple = ObjectToTuple<__defaultExports>;

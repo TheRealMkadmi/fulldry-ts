@@ -7,16 +7,26 @@ import { GeneratorParams } from "@edgedb/generate/dist/genutil";
 
 const ts = syntax["ts"];
 
-const syntaxDir = "syntax";
+const syntaxDir = "./src/generated/syntax";
 
 // probably should clean up the directory first
 console.log(`Generating syntax directory`);
 for (const file of ts) {
     console.log(`Writing ${file.path}`);
-    writeFileSync(`./src/generated/${syntaxDir}/${file.path}`, file.content) // probably better with os.join
+    writeFileSync(`${syntaxDir}/${file.path}`, file.content) // probably better with os.join
 }
 
 console.log(`Generating index`);
-generateIndex({
-    dir: new DirBuilder()
-} as GeneratorParams);
+
+const dir = new DirBuilder();
+
+generateIndex({ dir } as GeneratorParams);
+
+console.log(`Writing index`);
+dir.write(syntaxDir, {
+    mode: 'ts',
+    moduleKind: 'esm',
+    fileExtension: '.ts',
+    moduleExtension: '',
+    written: new Set()
+})

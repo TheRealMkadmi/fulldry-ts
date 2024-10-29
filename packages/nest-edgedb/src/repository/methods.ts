@@ -1,5 +1,5 @@
 import { Client } from 'edgedb';
-import e from 'dbschema/edgeql-js';
+import e from '../generated/syntax/';
 import {
     BaseType,
     computeObjectShape,
@@ -19,7 +19,7 @@ import { InsertShape } from '../generated/syntax/insert';
 import { $expr_PathNode, $linkPropify } from '../generated/syntax/path';
 import { $expr_Operator, Cardinality } from '../generated/syntax/reflection';
 import { UpdateShape } from '../generated/syntax/update';
-import type * as _std from 'dbschema/edgeql-js/modules/std';
+import type * as _std from '../generated/syntax/modules/std';
 import { PaginateResult } from 'common';
 import { Pet, User } from 'dbschema/edgeql-js/modules/default';
 
