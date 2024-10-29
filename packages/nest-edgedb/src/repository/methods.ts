@@ -275,7 +275,6 @@ const paginate: $overload<RenderPaginate<Models>> =
 // Count Method
 type RenderCount<OneOfPossibleOptions> = <
     const T extends OneOfPossibleOptions & $expr_PathNode,
-    Scope extends ModelScope<T>
 >(
     client: Client,
     model: T,
@@ -283,10 +282,10 @@ type RenderCount<OneOfPossibleOptions> = <
 ) => Promise<number>;
 
 const count: $overload<RenderCount<Models>> =
-    async <T, Scope>(
+    async <T>(
         client: Client,
         model: T,
-        filter?: (scope: Scope) => SelectModifiers['filter']
+        filter?: FilterCallable<T>
     ) => {
         const query = e.select(model, (m: any) => ({
             filter: filter ? filter(m) : undefined,
@@ -297,18 +296,17 @@ const count: $overload<RenderCount<Models>> =
 // Exists Method
 type RenderExists<OneOfPossibleOptions> = <
     const T extends OneOfPossibleOptions & $expr_PathNode,
-    Scope extends ModelScope<T>
 >(
     client: Client,
     model: T,
-    filter?: (scope: Scope) => SelectModifiers['filter']
+    filter?: FilterCallable<T>
 ) => Promise<boolean>;
 
 const exists: $overload<RenderExists<Models>> =
-    async <T, Scope>(
+    async <T>(
         client: Client,
         model: T,
-        filter?: (scope: Scope) => SelectModifiers['filter']
+        filter?: FilterCallable<T>
     ) => {
         const query = e.select(model, (m: any) => ({
             filter: filter ? filter(m) : undefined,
@@ -324,7 +322,7 @@ type RenderSum<OneOfPossibleOptions> = <
     client: Client,
     model: T,
     field: Field,
-    filter?: (scope: ModelScope<T>) => SelectModifiers['filter']
+    filter?: FilterCallable<T>
 ) => Promise<number | null>;
 
 const sum: $overload<RenderSum<Models>> =
@@ -332,7 +330,7 @@ const sum: $overload<RenderSum<Models>> =
         client: Client,
         model: T,
         field: Field,
-        filter?: (scope: ModelScope<T>) => SelectModifiers['filter']
+        filter?: FilterCallable<T>
     ) => {
         return await aggregate(client, model, field, e.sum, filter);
     };
@@ -345,7 +343,7 @@ type RenderMin<OneOfPossibleOptions> = <
     client: Client,
     model: T,
     field: Field,
-    filter?: (scope: ModelScope<T>) => SelectModifiers['filter']
+    filter?: FilterCallable<T>
 ) => Promise<number | null>;
 
 const min: $overload<RenderMin<Models>> =
@@ -353,7 +351,7 @@ const min: $overload<RenderMin<Models>> =
         client: Client,
         model: T,
         field: Field,
-        filter?: (scope: ModelScope<T>) => SelectModifiers['filter']
+        filter?: FilterCallable<T>
     ) => {
         return await aggregate(client, model, field, e.min, filter);
     };
@@ -366,7 +364,7 @@ type RenderMax<OneOfPossibleOptions> = <
     client: Client,
     model: T,
     field: Field,
-    filter?: (scope: ModelScope<T>) => SelectModifiers['filter']
+    filter?: FilterCallable<T>
 ) => Promise<number | null>;
 
 const max: $overload<RenderMax<Models>> =
@@ -374,7 +372,7 @@ const max: $overload<RenderMax<Models>> =
         client: Client,
         model: T,
         field: Field,
-        filter?: (scope: ModelScope<T>) => SelectModifiers['filter']
+        filter?: FilterCallable<T>
     ) => {
         return await aggregate(client, model, field, e.max, filter);
     };
@@ -388,7 +386,7 @@ const aggregate = async <
     model: T,
     field: Field,
     aggregation: (field: any) => any,
-    filter?: (scope: ModelScope<T>) => SelectModifiers['filter']
+    filter?: FilterCallable<T>
 ): Promise<number | null> => {
     const query = e.select(model, (m: any) => ({
         filter: filter ? filter(m) : undefined,
