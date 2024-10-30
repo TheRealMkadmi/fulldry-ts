@@ -5,9 +5,8 @@ import * as _ from "../imports";
 import _module__enc from "./std/enc";
 import type * as _cfg from "./cfg";
 import type * as _cal from "./cal";
-import type * as _extpgvector from "./ext/pgvector";
 import type * as _schema from "./schema";
-type $anyscalar = $anypoint | $anyreal | $.EnumType | $bool | $bytes | $uuid | $str | $json | _cfg.$memory | _cal.$local_time | _cal.$relative_duration | _cal.$date_duration | _extpgvector.$vector;
+type $anyscalar = $anypoint | $anyreal | $.EnumType | $bool | $bytes | $uuid | $str | $json | _cfg.$memory | _cal.$local_time | _cal.$relative_duration | _cal.$date_duration;
 
 type $anypoint = $anydiscrete | $anycontiguous;
 

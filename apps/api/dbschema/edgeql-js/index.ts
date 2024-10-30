@@ -8,7 +8,6 @@ import * as $op from "./operators";
 import _std from "./modules/std";
 import _cal from "./modules/cal";
 import _cfg from "./modules/cfg";
-import _ext from "./modules/ext";
 import _fts from "./modules/fts";
 import _schema from "./modules/schema";
 import _sys from "./modules/sys";
@@ -22,7 +21,6 @@ const ExportDefault: typeof _std &
   "std": typeof _std;
   "cal": typeof _cal;
   "cfg": typeof _cfg;
-  "ext": typeof _ext;
   "fts": typeof _fts;
   "schema": typeof _schema;
   "sys": typeof _sys;
@@ -36,7 +34,6 @@ const ExportDefault: typeof _std &
   "std": _std,
   "cal": _cal,
   "cfg": _cfg,
-  "ext": _ext,
   "fts": _fts,
   "schema": _schema,
   "sys": _sys,

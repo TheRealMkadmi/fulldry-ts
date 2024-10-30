@@ -6,19 +6,19 @@ import type * as _std from "./std";
 export type $PetλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
   "name": $.PropertyDesc<_std.$str, $.Cardinality.One, true, false, false, false>;
   "age": $.PropertyDesc<_std.$int16, $.Cardinality.One, false, false, false, false>;
-  "<pets[is User]": $.LinkDesc<$User, $.Cardinality.Many, {}, false, false, false, false>;
-  "<pets": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false, false, false>;
+  "<pets[is User]": $.LinkDesc<$User, $.Cardinality.Many, {}, false, false,  false, false>;
+  "<pets": $.LinkDesc<$.ObjectType, $.Cardinality.Many, {}, false, false,  false, false>;
 }>;
 type $Pet = $.ObjectType<"default::Pet", $PetλShape, null, [
   ..._std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588['__exclusives__'],
-  { name: { __element__: _std.$str, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne }, },
+  {name: {__element__: _std.$str, __cardinality__: $.Cardinality.One | $.Cardinality.AtMostOne },},
 ]>;
 const $Pet = $.makeType<$Pet>(_.spec, "fd715057-68b4-11ef-99eb-73a1841c0b48", _.syntax.literal);
 
 const Pet: $.$expr_PathNode<$.TypeSet<$Pet, $.Cardinality.Many>, null> = _.syntax.$PathNode($.$toSet($Pet, $.Cardinality.Many), null);
 
 export type $UserλShape = $.typeutil.flatten<_std.$Object_8ce8c71ee4fa5f73840c22d7eaa58588λShape & {
-  "pets": $.LinkDesc<$Pet, $.Cardinality.Many, {}, false, false, false, false>;
+  "pets": $.LinkDesc<$Pet, $.Cardinality.Many, {}, false, false,  false, false>;
   "email": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
   "password": $.PropertyDesc<_std.$str, $.Cardinality.One, false, false, false, false>;
   "age": $.PropertyDesc<_std.$int16, $.Cardinality.AtMostOne, false, false, false, false>;
@@ -43,4 +43,3 @@ const __defaultExports: __defaultExports = {
   "User": User
 };
 export default __defaultExports;
-

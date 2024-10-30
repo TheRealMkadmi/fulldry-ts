@@ -8,9 +8,6 @@ import type * as _sys from "./modules/sys";
 import type * as _stdenc from "./modules/std/enc";
 import type * as _schema from "./modules/schema";
 import type * as _fts from "./modules/fts";
-import type * as _extpgvector from "./modules/ext/pgvector";
-import type * as _extauth from "./modules/ext/auth";
-import type * as _extai from "./modules/ext/ai";
 import type * as _cfg from "./modules/cfg";
 import type * as _cal from "./modules/cal";
 export type scalarAssignableBy<T extends $.ScalarType> =
@@ -54,14 +51,6 @@ export type scalarAssignableBy<T extends $.ScalarType> =
   T extends _fts.$LuceneLanguage ? _fts.$LuceneLanguage : 
   T extends _fts.$Language ? _fts.$Language : 
   T extends _fts.$ElasticLanguage ? _fts.$ElasticLanguage : 
-  T extends _extpgvector.$vector ? _extpgvector.$vector : 
-  T extends _extauth.$SMTPSecurity ? _extauth.$SMTPSecurity : 
-  T extends _extauth.$JWTAlgo ? _extauth.$JWTAlgo : 
-  T extends _extauth.$FlowType ? _extauth.$FlowType : 
-  T extends _extai.$ProviderAPIStyle ? _extai.$ProviderAPIStyle : 
-  T extends _extai.$IndexType ? _extai.$IndexType : 
-  T extends _extai.$DistanceFunction ? _extai.$DistanceFunction : 
-  T extends _extai.$ChatParticipantRole ? _extai.$ChatParticipantRole : 
   T extends _cfg.$memory ? _cfg.$memory : 
   T extends _cfg.$QueryCacheMode ? _cfg.$QueryCacheMode : 
   T extends _cfg.$ConnectionTransport ? _cfg.$ConnectionTransport : 
@@ -114,14 +103,6 @@ export type scalarCastableFrom<T extends $.ScalarType> =
   T extends _fts.$LuceneLanguage ? _fts.$LuceneLanguage : 
   T extends _fts.$Language ? _fts.$Language : 
   T extends _fts.$ElasticLanguage ? _fts.$ElasticLanguage : 
-  T extends _extpgvector.$vector ? _extpgvector.$vector : 
-  T extends _extauth.$SMTPSecurity ? _extauth.$SMTPSecurity : 
-  T extends _extauth.$JWTAlgo ? _extauth.$JWTAlgo : 
-  T extends _extauth.$FlowType ? _extauth.$FlowType : 
-  T extends _extai.$ProviderAPIStyle ? _extai.$ProviderAPIStyle : 
-  T extends _extai.$IndexType ? _extai.$IndexType : 
-  T extends _extai.$DistanceFunction ? _extai.$DistanceFunction : 
-  T extends _extai.$ChatParticipantRole ? _extai.$ChatParticipantRole : 
   T extends _cfg.$memory ? _cfg.$memory : 
   T extends _cfg.$QueryCacheMode ? _cfg.$QueryCacheMode : 
   T extends _cfg.$ConnectionTransport ? _cfg.$ConnectionTransport : 
@@ -376,54 +357,6 @@ type getSharedParentScalar<A, B> =
   :
   A extends _fts.$ElasticLanguage ?
     B extends _fts.$ElasticLanguage ?
-    B
-    :
-    never
-  :
-  A extends _extpgvector.$vector ?
-    B extends _extpgvector.$vector ?
-    B
-    :
-    never
-  :
-  A extends _extauth.$SMTPSecurity ?
-    B extends _extauth.$SMTPSecurity ?
-    B
-    :
-    never
-  :
-  A extends _extauth.$JWTAlgo ?
-    B extends _extauth.$JWTAlgo ?
-    B
-    :
-    never
-  :
-  A extends _extauth.$FlowType ?
-    B extends _extauth.$FlowType ?
-    B
-    :
-    never
-  :
-  A extends _extai.$ProviderAPIStyle ?
-    B extends _extai.$ProviderAPIStyle ?
-    B
-    :
-    never
-  :
-  A extends _extai.$IndexType ?
-    B extends _extai.$IndexType ?
-    B
-    :
-    never
-  :
-  A extends _extai.$DistanceFunction ?
-    B extends _extai.$DistanceFunction ?
-    B
-    :
-    never
-  :
-  A extends _extai.$ChatParticipantRole ?
-    B extends _extai.$ChatParticipantRole ?
     B
     :
     never
@@ -745,54 +678,6 @@ function getSharedParentScalar<A extends $.ScalarType, B extends $.ScalarType>(a
     }
     throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
     }
-  if (a.__name__ === "ext::pgvector::vector") {
-    if(b.__name__ === "ext::pgvector::vector") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
-  if (a.__name__ === "ext::auth::SMTPSecurity") {
-    if(b.__name__ === "ext::auth::SMTPSecurity") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
-  if (a.__name__ === "ext::auth::JWTAlgo") {
-    if(b.__name__ === "ext::auth::JWTAlgo") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
-  if (a.__name__ === "ext::auth::FlowType") {
-    if(b.__name__ === "ext::auth::FlowType") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
-  if (a.__name__ === "ext::ai::ProviderAPIStyle") {
-    if(b.__name__ === "ext::ai::ProviderAPIStyle") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
-  if (a.__name__ === "ext::ai::IndexType") {
-    if(b.__name__ === "ext::ai::IndexType") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
-  if (a.__name__ === "ext::ai::DistanceFunction") {
-    if(b.__name__ === "ext::ai::DistanceFunction") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
-  if (a.__name__ === "ext::ai::ChatParticipantRole") {
-    if(b.__name__ === "ext::ai::ChatParticipantRole") {
-      return b;
-    }
-    throw new Error(`Types are not castable: ${a.__name__}, ${b.__name__}`);
-    }
   if (a.__name__ === "cfg::memory") {
     if(b.__name__ === "cfg::memory") {
       return b;
@@ -925,7 +810,6 @@ export type literalToScalarType<T extends any> =
   T extends edgedb.RelativeDuration ? scalarWithConstType<_cal.$relative_duration, T> :
   T extends edgedb.DateDuration ? scalarWithConstType<_cal.$date_duration, T> :
   T extends edgedb.ConfigMemory ? scalarWithConstType<_cfg.$memory, T> :
-  T extends Float32Array ? scalarWithConstType<_extpgvector.$vector, T> :
   T extends edgedb.Range<infer E> ? $.RangeType<literalToScalarType<E>> :
   T extends edgedb.MultiRange<infer E> ? $.MultiRangeType<literalToScalarType<E>> :
   $.BaseType;
@@ -980,9 +864,6 @@ function literalToTypeSet(type: any): $.TypeSet {
   }
   if (type instanceof edgedb.ConfigMemory) {
     return literal.$getType("00000000-0000-0000-0000-000000000130")(type);
-  }
-  if (type instanceof Float32Array) {
-    return literal.$getType("9565dd88-04f5-11ee-a691-0b6ebe179825")(type);
   }
   throw new Error(`Cannot convert literal '${type}' into scalar type`);
 }
