@@ -2,7 +2,6 @@ import { Client } from 'edgedb';
 import e from '../generated/syntax/';
 import {
     BaseType,
-    computeObjectShape,
     computeTsTypeCard,
     Expression,
     TypeSet,
@@ -10,94 +9,37 @@ import {
 } from '../generated/syntax/typesystem';
 import {
     ComputeSelectCardinality,
-    normaliseShape,
     objectTypeToSelectShape,
-    SelectModifierNames,
     SelectModifiers,
-} from '../generated/syntax//select';
+} from '../generated/syntax/select';
 import { InsertShape } from '../generated/syntax/insert';
-import { $expr_PathNode, $linkPropify } from '../generated/syntax/path';
-import { $expr_Operator, Cardinality } from '../generated/syntax/reflection';
+import { $expr_PathNode } from '../generated/syntax/path';
+import { Cardinality } from 'edgedb/dist/reflection';
 import { UpdateShape } from '../generated/syntax/update';
-import type * as _std from '../generated/syntax/modules/std';
 import { PaginateResult } from 'common';
+
+import { RenderFunction, ConvertTupleOfPossibleOptionsToOverloadsIntersection, ValuesTuple, TupleToUnion } from 'fulldry-utils';
+import {
+    BackLinks,
+    computeSelectShapeResult, FilterCallable, FilterSingleType, FilterType,
+    ManyCompleteProjections, ModelIdentity,
+    ModelIdentityArray, ModelScope, ModelSelectShape,
+    ModelTypeSet, NumericFields,
+    OneCompleteProjection,
+} from './types';
+
 import { Pet, User } from 'dbschema/edgeql-js/modules/default';
 
 import __defaultExports from 'dbschema/edgeql-js/modules/default';
 
-import { RenderFunction, ConvertTupleOfPossibleOptionsToOverloadsIntersection, ValuesTuple } from 'fulldry-utils';
-
-
-type FilterSingleType = Readonly<{
-    filter_single: $expr_Operator<_std.$bool, Cardinality.One>;
-}>;
-
-type FilterType = Readonly<{
-    filter: $expr_Operator<_std.$bool, Cardinality.One>;
-}>;
-
-type ModelIdentity = {
-    id: string;
-} | null;
-
-type ModelIdentityArray = Exclude<ModelIdentity, null>[];
-
-type ModelTypeSet<M> = M extends $expr_PathNode<infer U, any> ? U : never;
-
-type ModelShape<M> = ModelTypeSet<M>['__element__']['__pointers__'];
-
-type BackLinks<M> = {
-    [K in keyof ModelShape<M> as K extends `<${string}[${string}]` ? K : never]: ModelShape<M>[K];
-};
-
-type NumericFields<M> = {
-    [K in keyof ModelShape<M>]: ModelShape<M>[K]['target'] extends _std.$number ? K : never;
-}[keyof ModelShape<M>];
-
-type ModelSelectShape<M> =
-    objectTypeToSelectShape<ModelTypeSet<M>["__element__"]> &
-    SelectModifiers<ModelTypeSet<M>["__element__"]>;
-
-type ModelScope<M> =
-    $scopify<ModelTypeSet<M>["__element__"]> &
-    $linkPropify<{
-        [K in keyof ModelTypeSet<M>]: K extends "__cardinality__"
-        ? Cardinality.One
-        : ModelTypeSet<M>[K];
-    }>;
-
-type computeSelectShapeResult<
-    M,
-    Shape extends ModelSelectShape<M>,
-> = computeTsTypeCard<
-    computeObjectShape<ModelShape<M>, normaliseShape<Shape, SelectModifierNames>>,
-    ComputeSelectCardinality<ModelTypeSet<M>, Pick<Shape, SelectModifierNames>>
->;
-
-type FilterCallable<M> = (model: ModelScope<M>) => SelectModifiers['filter'];
-
-
-type OneCompleteProjection<M extends $expr_PathNode> = computeSelectShapeResult<M, M['*'] & FilterSingleType>;
-type ManyCompleteProjections<M extends $expr_PathNode> = computeSelectShapeResult<M, M['*'] & FilterType>;
-
+import { $overload } from 'fulldry-utils';
 
 // _________________________________
 
-type Exports = typeof __defaultExports;
 
-type Models = Exports[keyof Exports];
+type ModelsTuple = [typeof Pet, typeof User];
+type Models = TupleToUnion<ModelsTuple>;
 
-
-
-
-// Define the tuple of model types for the repository
-type ModelTuple = ValuesTuple<typeof __defaultExports, [keyof Exports]>;
-
-
-
-
-
-type $overload<TFunc extends RenderFunction<any, any, any>> = ConvertTupleOfPossibleOptionsToOverloadsIntersection<ModelTuple, TFunc>
 
 
 // _____________
@@ -162,7 +104,7 @@ const findOneById: $overload<RenderFindOneById<Models>> =
 // _____________
 
 type RenderFindOneByIdWithProjection<OneOfPossibleOptions> = <
-    const T extends OneOfPossibleOptions & $expr_PathNode,
+    const T extends OneOfPossibleOptions,
     Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>,
 >(client: Client, x: T, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => Promise<computeSelectShapeResult<T, Shape & FilterSingleType>>;
 const findOneByIdWithProjection: $overload<RenderFindOneByIdWithProjection<Models>> =
@@ -559,7 +501,7 @@ const groupBy: $overload<RenderGroupBy<Models>> =
         return result;
     };
 
-
+const client = {} as Client;
 
 const test = async () => {
     const pet = await findAll(client, User);
