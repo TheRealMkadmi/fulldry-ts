@@ -36,3 +36,50 @@ type MapTuple<X extends readonly unknown[], F extends HKT> = {
 
 // ["hellohello", "worldworld"]
 type MapResult = MapTuple<["hello", "world"], AppendSuffix>;
+
+interface DoubleString extends HKT {
+    new: (x: Assume<this["_1"], string>) => `${typeof x}${typeof x}`;
+}
+
+interface Append<S extends string> extends HKT {
+    new: (x: Assume<this["_1"], string>) => `${typeof x}${S}`;
+}
+
+interface SimpleCompose<_1 extends HKT, _2 extends HKT> extends HKT {
+    new: (x: this["_1"]) => Apply<_1, Apply<_2, this["_1"]>>;
+}
+
+type ExclaimThenDouble = SimpleCompose<DoubleString, Append<"! ">>;
+
+// "hello! hello!"
+type SimpleComposeValue = Apply<ExclaimThenDouble, "hello">;
+
+type Reduce<HKTs extends HKT[], X> = HKTs extends []
+    ? X
+    : HKTs extends [infer Head, ...infer Tail]
+    ? Apply<Assume<Head, HKT>, Reduce<Assume<Tail, HKT[]>, X>>
+    : never;
+
+interface Compose<HKTs extends HKT[]> extends HKT {
+    new: (x: this["_1"]) => Reduce<HKTs, this["_1"]>;
+}
+
+type MyProcess = Compose<[Append<"goodbye!">, DoubleString, Append<"! ">]>;
+
+// "hi! hi! goodbye!"
+type MyProcessResult = Apply<MyProcess, "hi">;
+
+type Reverse<T extends unknown[]> = T extends []
+    ? []
+    : T extends [infer U, ...infer Rest]
+    ? [...Reverse<Rest>, U]
+    : never;
+
+interface Flow<HKTs extends HKT[]> extends HKT {
+    new: (x: this["_1"]) => Reduce<Reverse<HKTs>, this["_1"]>;
+}
+
+type MyFlow = Flow<[Append<"! ">, DoubleString, Append<"goodbye!">]>;
+
+// "hi! hi! goodbye!"
+type MyFlowResult = Apply<MyFlow, "hi">;
