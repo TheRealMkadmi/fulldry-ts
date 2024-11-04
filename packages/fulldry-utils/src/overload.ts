@@ -3,7 +3,9 @@
 
 import { TupleToUnion, UnionToIntersection } from './transform';
 import { GenericFunction } from './primitives';
-
+import { extend } from 'fp-ts';
+import { Apply, Flow, HKT } from './hkt';
+import { Assume } from './lies';
 
 export type ConvertTupleOfPossibleOptionsToOverloadsUnion<
     TupleOfPossibleOptions extends readonly any[],
@@ -14,8 +16,8 @@ export type ConvertTupleOfPossibleOptionsToOverloadsUnion<
     : never;
 
 export type $overload<
-    TFunc extends GenericFunction<any, any, any>,
-    TAgainst extends readonly any[]
+    TAgainst extends readonly any[],
+    TFunc extends GenericFunction<any, any, any>
 > = UnionToIntersection<
     ConvertTupleOfPossibleOptionsToOverloadsUnion<
         TAgainst,
@@ -23,11 +25,20 @@ export type $overload<
     >
 >
 
-// Example usage:
+// Example usage 1:
 declare type PossibleOptions = ['a', 'b', 'c'];
-type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions>(x: T) => T;
-declare const method: $overload<RenderFindAll<TupleToUnion<PossibleOptions>>, PossibleOptions>;
+type Foo<U> = <const T extends U>(x: T) => T;
+declare const method: $overload<PossibleOptions, Foo<TupleToUnion<PossibleOptions>>>;
+const methodResult = method('a'); // methodResult is of type "a"
 
-const r = method('a'); // r is 'a'
+interface $TupleToUnion extends HKT {
+    new: (x: Assume<this["_1"], any[]>) => TupleToUnion<Assume<this["_1"], any[]>>;
+}
 
+interface $Foo extends HKT {
+    new: (x: Assume<this["_1"], any[]>) => Foo<Assume<this["_1"], any>>;
+}
 
+// Example Usage 2:
+declare const method2: $overload<PossibleOptions, Apply<Flow<[$TupleToUnion, $Foo]>, PossibleOptions>>;
+const method2Result = method2('b'); // method2Result is of type "b"
