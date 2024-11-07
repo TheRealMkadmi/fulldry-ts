@@ -30,28 +30,25 @@ type Foo<U> = <const T extends U>(x: T) => T;
 declare const method: $overload<PossibleOptions, Foo<TupleToUnion<PossibleOptions>>>;
 const methodResult = method('a'); // methodResult is of type "a"
 
-// Example usage 2 (with HKTs for a better DX)
 interface $TupleToUnion extends HKT {
     new: (x: Assume<this["_1"], any[]>) => TupleToUnion<Assume<this["_1"], any[]>>;
 }
 
 interface $Foo extends HKT {
-    new: (x: Assume<this["_1"], any>) => Foo<Assume<this["_1"], any>>;
+    new: (x: Assume<this["_1"], any[]>) => Foo<Assume<this["_1"], any>>;
 }
 
-interface OverloadFactory<TOptions extends readonly any[]> extends HKT {
-    new: (x: Assume<this["_1"], HKT & { new: GenericFunction<any, any, any> }>) => $overload<
+export type overload<
+    TOptions extends readonly any[],
+    TFunc extends HKT & { new: GenericFunction<any, any, any> },
+> =
+    $overload<
         TOptions,
-        Apply<
-            Flow<[
-                $TupleToUnion,
-                Assume<this["_1"], HKT & { new: GenericFunction<any, any, any> }>
-            ]>,
-            TOptions
-        >
+        Apply<Flow<[$TupleToUnion, TFunc]>, TOptions>
     >;
-}
 
-declare const method3: Apply<OverloadFactory<PossibleOptions>, $Foo>;
-const method3Result2 = method3('d'); // method3Result2 is of type "d"
+// Example Usage 2:
+declare const method2: overload<PossibleOptions, $Foo>;
+const method3Result = method2('c'); // method3Result is of type "c"
 
+// ______ 
