@@ -1,3 +1,5 @@
+// workaround for https://github.com/microsoft/typeScript/issues/1213
+
 import { Assume } from "./lies";
 
 type GenericFunction = (...x: never[]) => unknown;
