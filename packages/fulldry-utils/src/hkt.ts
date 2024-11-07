@@ -2,7 +2,7 @@
 
 import { Assume } from "./lies";
 
-type GenericFunction = (...x: never[]) => unknown;
+export type GenericFunction = (...x: never[]) => unknown;
 
 export abstract class HKT {
     readonly _1?: unknown;
