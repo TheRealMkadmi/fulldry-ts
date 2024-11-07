@@ -14,7 +14,7 @@ type ConvertTupleOfPossibleOptionsToOverloadsUnion<
     | ConvertTupleOfPossibleOptionsToOverloadsUnion<RestOfPossibleOptions, Render>
     : never;
 
-export type $overload<
+export type overload<
     TAgainst extends readonly any[],
     TFunc extends GenericFunction<any, any, any>
 > = UnionToIntersection<
@@ -27,7 +27,7 @@ export type $overload<
 // Example usage 1:
 declare type PossibleOptions = ['a', 'b', 'c', 'd'];
 type Foo<U> = <const T extends U>(x: T) => T;
-declare const method: $overload<PossibleOptions, Foo<TupleToUnion<PossibleOptions>>>;
+declare const method: overload<PossibleOptions, Foo<TupleToUnion<PossibleOptions>>>;
 const methodResult = method('a'); // methodResult is of type "a"
 
 interface $TupleToUnion extends HKT {
@@ -35,20 +35,18 @@ interface $TupleToUnion extends HKT {
 }
 
 interface $Foo extends HKT {
-    new: (x: Assume<this["_1"], any[]>) => Foo<Assume<this["_1"], any>>;
+    new: (x: Assume<this["_1"], any>) => Foo<Assume<this["_1"], any>>;
 }
 
-export type overload<
+export type $overload<
     TOptions extends readonly any[],
     TFunc extends HKT & { new: GenericFunction<any, any, any> },
 > =
-    $overload<
+    overload<
         TOptions,
         Apply<Flow<[$TupleToUnion, TFunc]>, TOptions>
     >;
 
 // Example Usage 2:
-declare const method2: overload<PossibleOptions, $Foo>;
+declare const method2: $overload<PossibleOptions, $Foo>;
 const method3Result = method2('c'); // method3Result is of type "c"
-
-// ______ 
