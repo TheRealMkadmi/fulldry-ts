@@ -77,27 +77,21 @@ const method2Result = method2('c'); // method3Result is of type "c"
 type method2Result = Expect<Equal<typeof method2Result, "c">>;
 
 /**
- * Step 3: Making it even better, we'll use a bit of fp to curry PossibleOptions and then pass just $Foo.
+ * Step 3: Making it even better, we'll wrap PossibleOptions and then pass just $Foo.
  * Dirty until we get at least https://github.com/tc39/proposal-partial-application in
  * So we go to https://github.com/tc39/proposal-partial-application
  * https://github.com/microsoft/TypeScript/issues/37181
  * https://github.com/microsoft/TypeScript/pull/17961
- * https://github.com/microsoft/TypeScript/issues/52035#issuecomment-1402795342
+ * https://github.com/microsoft/TypeScript/issues/52035
  */
-declare function $overload2<
-    TOptions extends readonly any[],
-    TFunc extends HKT & { new: GenericFunction<any, any, any> },
->(options: TOptions, func: TFunc): $overload<TOptions, TFunc>;
-
-
 
 class Wrapper<T extends readonly any[]> {
     wrap!: <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
 }
 
 const wrapper = new Wrapper<PossibleOptions>();
+type k = ReturnType<typeof wrapper.wrap<$Foo>>;
 
-const wrapped = wrapper.wrap<$Foo>();
-
-const method3Result = wrapped('c');
-type method3Result = Expect<Equal<typeof method2Result, "c">>;
+declare const method3: k;
+const method3Result = method3('b');
+type method3Result = Expect<Equal<typeof method3Result, "b">>;
