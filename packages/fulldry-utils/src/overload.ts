@@ -91,3 +91,13 @@ declare function $overload2<
 
 
 
+class Wrapper<T extends readonly any[]> {
+    wrap!: <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
+}
+
+const wrapper = new Wrapper<PossibleOptions>();
+
+const wrapped = wrapper.wrap<$Foo>();
+
+const method3Result = wrapped('c');
+type method3Result = Expect<Equal<typeof method2Result, "c">>;
