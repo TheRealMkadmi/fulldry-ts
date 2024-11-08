@@ -81,17 +81,14 @@ type method2Result = Expect<Equal<typeof method2Result, "c">>;
  * Dirty until we get at least https://github.com/tc39/proposal-partial-application in
  * So we go to https://github.com/tc39/proposal-partial-application
  * https://github.com/microsoft/TypeScript/issues/37181
- * https://github.com/microsoft/TypeScript/pull/17961
  * https://github.com/microsoft/TypeScript/issues/52035
  */
+type Wrapper<T extends readonly any[]> = <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
+declare const wrapper: Wrapper<PossibleOptions>;
 
-class Wrapper<T extends readonly any[]> {
-    wrap!: <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
-}
+type $overloadFinal<TFunc extends HKT> = ReturnType<typeof wrapper<TFunc>>
 
-const wrapper = new Wrapper<PossibleOptions>();
-type k = ReturnType<typeof wrapper.wrap<$Foo>>;
-
-declare const method3: k;
-const method3Result = method3('b');
-type method3Result = Expect<Equal<typeof method3Result, "b">>;
+// Tests
+declare const method3: $overloadFinal<$Foo>;
+const method3Result = method3('d'); // method3Result is of type "d"
+type method3Result = Expect<Equal<typeof method3Result, "d">>;
