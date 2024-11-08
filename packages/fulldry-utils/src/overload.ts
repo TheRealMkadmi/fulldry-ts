@@ -5,6 +5,7 @@ import { TupleToUnion, UnionToIntersection } from './transform';
 import { GenericFunction } from './primitives';
 import { Apply, Flow, HKT } from './hkt';
 import { Assume } from './lies';
+import { Equal, Expect } from './tests';
 
 type ConvertTupleOfPossibleOptionsToOverloadsUnion<
     TupleOfPossibleOptions extends readonly any[],
@@ -28,7 +29,8 @@ export type overload<
 declare type PossibleOptions = ['a', 'b', 'c', 'd'];
 type Foo<U> = <const T extends U>(x: T) => T;
 declare const method: overload<PossibleOptions, Foo<TupleToUnion<PossibleOptions>>>;
-const methodResult = method('a'); // methodResult is of type "a"
+const methodResult = method('a');
+type methodResult = Expect<Equal<typeof methodResult, "a">>;
 
 interface $TupleToUnion extends HKT {
     new: (x: Assume<this["_1"], any[]>) => TupleToUnion<Assume<this["_1"], any[]>>;
@@ -50,3 +52,6 @@ export type $overload<
 // Example Usage 2:
 declare const method2: $overload<PossibleOptions, $Foo>;
 const method3Result = method2('c'); // method3Result is of type "c"
+type method3Result = Expect<Equal<typeof method3Result, "c">>;
+
+
