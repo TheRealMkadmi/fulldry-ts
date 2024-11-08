@@ -1,6 +1,7 @@
 // workaround for https://github.com/microsoft/typeScript/issues/1213
 
-import { Assume } from "./lies";
+import { Assume, InstanceOf } from "./lies";
+import { InferredTuple } from "./primitives";
 
 export type GenericFunction = (...x: never[]) => unknown;
 
@@ -15,33 +16,11 @@ export type Apply<F extends HKT, _1> = ReturnType<
     })["new"]
 >;
 
-type MapTuple<X extends readonly unknown[], F extends HKT> = {
+export type MapTuple<X extends readonly unknown[], F extends HKT> = {
     [K in keyof X]: Apply<F, X[K]>;
 };
 
-type InferredType = string | number | boolean | object | undefined | null;
-
-type InferredTuple = InferredType[] | ReadonlyArray<InferredType>;
-
-type InstanceOf<T> = T extends new (...args: any) => infer R ? R : never;
-
-export declare function map<X extends InferredTuple, F extends typeof HKT>(
-    x: readonly [...X],
-    f: F
-): MapTuple<X, Assume<InstanceOf<F>, HKT>>;
-
-export const append = <S extends string>(s: S) =>
-    class extends HKT {
-        new = (x: Assume<this["_1"], string>) => `${x}${s}` as const;
-    };
-
-type SimpleCompose<
-    HKT1 extends HKT,
-    HKT2 extends HKT,
-    X
-> = Apply<HKT1, Apply<HKT2, X>>;
-
-type Reduce<HKTs extends HKT[], X> = HKTs extends []
+export type Reduce<HKTs extends HKT[], X> = HKTs extends []
     ? X
     : HKTs extends [infer Head, ...infer Tail]
     ? Apply<Assume<Head, HKT>, Reduce<Assume<Tail, HKT[]>, X>>
@@ -51,7 +30,7 @@ interface Compose<HKTs extends HKT[]> extends HKT {
     new: (x: this["_1"]) => Reduce<HKTs, this["_1"]>;
 }
 
-type Reverse<T extends unknown[]> = T extends []
+export type Reverse<T extends unknown[]> = T extends []
     ? []
     : T extends [infer U, ...infer Rest]
     ? [...Reverse<Rest>, U]

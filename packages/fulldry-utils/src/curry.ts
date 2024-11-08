@@ -1,12 +1,11 @@
-export type Curry<T> = T extends (...args: infer Args) => infer R
-    ? Args extends [infer First, ...infer Rest]
-    ? (arg: First) => Curry<(...args: Rest) => R>
-    : R
-    : never;
-
-
-type PossibleOptions = ['a', 'b', 'c', 'd'];
-type Foo<U extends PossibleOptions, K> = <const T extends U>(x: T) => T & K;
-
-
+const foo = <T,>(arg: T) => ({ test: arg });
+// so, let's create a parametric class
+class Wrapper<T> {
+    // with the only method that uses our "foo"
+    wrapped = (arg: T) => foo(arg);
+};
+// due to the fact that class is a type we can use it as a type 
+// with a generic parameter.
+type GetFooResult<T> = ReturnType<Wrapper<T>['wrapped']>
+type Bingo = GetFooResult<number>; // { test: number }
 

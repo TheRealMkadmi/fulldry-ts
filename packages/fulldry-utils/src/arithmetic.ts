@@ -15,7 +15,7 @@ export type IsPositive<N extends number> =
 export type IsWhole<N extends number> =
     `${N}` extends `${number}.${number}` ? false : true;
 
-export type IsValid<N extends number> =
+export type IsPositiveInteger<N extends number> =
     IsPositive<N> extends true
     ? (IsWhole<N> extends true ? true : false)
     : false;

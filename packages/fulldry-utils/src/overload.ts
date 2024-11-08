@@ -1,12 +1,21 @@
 // workaround for: https://github.com/microsoft/TypeScript/issues/27808
+// https://github.com/microsoft/TypeScript/issues/14107
 // look at what they do to mimic a fraction of our power - C#
 
-import { TupleToUnion, UnionToIntersection } from './transform';
+/**
+ * TypeScript currently has neither generic values, higher kinded types, nor typeof on arbitrary expressions. 
+ * Generics in TypeScript are sort of "shallow" that way. 
+ * So as far as I know there's unfortunately no way to describe a type function that plugs type parameters into generic functions and checks the result
+ */
+
+import { UnionToIntersection } from './transform';
 import { GenericFunction } from './primitives';
 import { Apply, Flow, HKT } from './hkt';
 import { Assume } from './lies';
 import { Equal, Expect } from './tests';
-import { Curry } from './curry';
+import { TupleToUnion } from './tuples';
+
+
 
 // Just for testing purposes
 type PossibleOptions = ['a', 'b', 'c', 'd'];
@@ -69,12 +78,16 @@ type method2Result = Expect<Equal<typeof method2Result, "c">>;
 
 /**
  * Step 3: Making it even better, we'll use a bit of fp to curry PossibleOptions and then pass just $Foo.
+ * Dirty until we get at least https://github.com/tc39/proposal-partial-application in
+ * So we go to https://github.com/tc39/proposal-partial-application
+ * https://github.com/microsoft/TypeScript/issues/37181
+ * https://github.com/microsoft/TypeScript/pull/17961
+ * https://github.com/microsoft/TypeScript/issues/52035#issuecomment-1402795342
  */
 declare function $overload2<
     TOptions extends readonly any[],
     TFunc extends HKT & { new: GenericFunction<any, any, any> },
 >(options: TOptions, func: TFunc): $overload<TOptions, TFunc>;
 
-declare const method3: Curry<typeof $overload2>;
-type Method3Return = (func: HKT & { new: GenericFunction<any, any, any> }) => $overload<PossibleOptions, typeof func>;
+
 

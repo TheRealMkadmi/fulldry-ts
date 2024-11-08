@@ -13,13 +13,6 @@ export type IsAny<T> = 0 extends 1 & T ? true : false;
 export type NotAny<T> = true extends IsAny<T> ? false : true;
 
 export type Debug<T> = T extends object ? { [K in keyof T]: T[K] } : never;
-
-export type MergeInsertions<T> = T extends object
-  ? { [K in keyof T]: MergeInsertions<T[K]> }
-  : T;
-
-export type Alike<X, Y> = Equal<MergeInsertions<X>, MergeInsertions<Y>>;
-
 export type ExpectExtends<TValue, TExpected> = TExpected extends TValue
   ? true
   : false;
