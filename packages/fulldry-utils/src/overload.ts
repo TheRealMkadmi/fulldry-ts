@@ -20,6 +20,7 @@ import { TupleToUnion } from './tuples';
 // Just for testing purposes
 type PossibleOptions = ['a', 'b', 'c', 'd'];
 type Foo<U> = <const T extends U>(x: T) => T;
+type Bar<U extends string> = <const T extends U>(x: T) => `This is ${T}`;
 
 
 /**
@@ -62,6 +63,7 @@ interface $Foo extends HKT {
     new: (x: Assume<this["_1"], any>) => Foo<Assume<this["_1"], any>>;
 }
 
+
 export type $overload<
     TOptions extends readonly any[],
     TFunc extends HKT & { new: GenericFunction<any, any, any> },
@@ -79,16 +81,15 @@ type method2Result = Expect<Equal<typeof method2Result, "c">>;
 /**
  * Step 3: Making it even better, we'll wrap PossibleOptions and then pass just $Foo.
  * Dirty until we get at least https://github.com/tc39/proposal-partial-application in
- * So we go to https://github.com/tc39/proposal-partial-application
  * https://github.com/microsoft/TypeScript/issues/37181
  * https://github.com/microsoft/TypeScript/issues/52035
+ * ToyScript has neither generic values, higher kinded types
  */
-type Wrapper<T extends readonly any[]> = <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
-declare const wrapper: Wrapper<PossibleOptions>;
 
-type $overloadFinal<TFunc extends HKT> = ReturnType<typeof wrapper<TFunc>>
+type Wrap<T extends readonly any[]> = <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
+
+// https://github.com/microsoft/TypeScript/pull/47607
 
 // Tests
-declare const method3: $overloadFinal<$Foo>;
-const method3Result = method3('d'); // method3Result is of type "d"
-type method3Result = Expect<Equal<typeof method3Result, "d">>;
+type test = Wrap<PossibleOptions>;
+
