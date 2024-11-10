@@ -3,8 +3,8 @@
 // look at what they do to mimic a fraction of our power - C#
 
 /**
- * TypeScript currently has neither generic values, higher kinded types, nor typeof on arbitrary expressions. 
- * Generics in TypeScript are sort of "shallow" that way. 
+ * TypeScript currently has neither generic values, higher kinded types, nor typeof on arbitrary expressions.
+ * Generics in TypeScript are sort of "shallow" that way.
  */
 
 import { UnionToIntersection } from './transform';
@@ -50,7 +50,7 @@ const methodResult = method('a');
 type methodResult = Expect<Equal<typeof methodResult, "a">>;
 
 /**
- * Step 2: Making it a bit better, by using HKTs. This is just an intermediate step towartds the final solution.
+ * Step 2: Making it a bit better, by using HKTs. This is just an intermediate step towards the final solution.
  * We can't skip to step 3 because we'll hit the wall of `TFunc is not generic` error. This is because of #1213.
  */
 interface $TupleToUnion extends HKT {
@@ -94,6 +94,9 @@ declare const method3: ApplyHktOverload<$Foo>;
 const method3Result = method3('d'); // method3Result is of type "d"
 type method3Result = Expect<Equal<typeof method3Result, "d">>;
 
+/**
+ * Just for the secret cutscene, we can also raw dog it with the `Wrap` type.
+ */
 declare const wrap2: Wrap<PossibleOptions>;
 type ApplyOverload<TFunc extends GenericFunction<any, any, any>> = ReturnType<typeof wrap2<TFunc>>;
 declare const method4: ApplyOverload<Foo<TupleToUnion<PossibleOptions>>>;
