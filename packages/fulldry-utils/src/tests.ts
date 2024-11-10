@@ -8,19 +8,3 @@ export type Expect<T extends true> = T;
 
 export type NotEqual<X, Y> = true extends Equal<X, Y> ? false : true;
 
-// https://stackoverflow.com/questions/49927523/disallow-call-with-any/49928360#49928360
-export type IsAny<T> = 0 extends 1 & T ? true : false;
-export type NotAny<T> = true extends IsAny<T> ? false : true;
-
-export type Debug<T> = T extends object ? { [K in keyof T]: T[K] } : never;
-export type ExpectExtends<TValue, TExpected> = TExpected extends TValue
-  ? true
-  : false;
-
-export type ExpectValidArgs<
-  FUNC extends (...args: any[]) => any,
-  ARGS extends any[],
-> = ARGS extends Parameters<FUNC> ? true : false;
-
-type Eq<T, S> =
-  [T] extends [S] ? [S] extends [T] ? true : false : false

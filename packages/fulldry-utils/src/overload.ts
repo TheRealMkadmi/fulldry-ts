@@ -9,8 +9,8 @@
 
 import { UnionToIntersection } from './transform';
 import { GenericFunction } from './primitives';
-import { Apply, Flow, HKT } from './hkt';
-import { Assume } from './lies';
+import { Apply, Chain, HKOperation } from './hkt';
+import { Coerce } from './lies';
 import { Equal, Expect } from './tests';
 import { TupleToUnion } from './tuples';
 
@@ -18,7 +18,6 @@ import { TupleToUnion } from './tuples';
 // Just for testing purposes
 type PossibleOptions = ['a', 'b', 'c', 'd'];
 type Foo<U> = <const T extends U>(x: T) => T;
-type Bar<U extends string> = <const T extends U>(x: T) => `This is ${T}`;
 
 
 /**
@@ -53,22 +52,22 @@ type methodResult = Expect<Equal<typeof methodResult, "a">>;
  * Step 2: Making it a bit better, by using HKTs. This is just an intermediate step towards the final solution.
  * We can't skip to step 3 because we'll hit the wall of `TFunc is not generic` error. This is because of #1213.
  */
-interface $TupleToUnion extends HKT {
-    new: (x: Assume<this["_1"], any[]>) => TupleToUnion<Assume<this["_1"], any[]>>;
+interface $TupleToUnion extends HKOperation {
+    new: (x: Coerce<this["_1"], any[]>) => TupleToUnion<Coerce<this["_1"], any[]>>;
 }
 
-interface $Foo extends HKT {
-    new: (x: Assume<this["_1"], any>) => Foo<Assume<this["_1"], any>>;
+interface $Foo extends HKOperation {
+    new: (x: Coerce<this["_1"], any>) => Foo<Coerce<this["_1"], any>>;
 }
 
 
 export type $overload<
     TOptions extends readonly any[],
-    TFunc extends HKT & { new: GenericFunction<any, any, any> },
+    TFunc extends HKOperation,
 > =
     overload<
         TOptions,
-        Apply<Flow<[$TupleToUnion, TFunc]>, TOptions>
+        Apply<Chain<[$TupleToUnion, TFunc]>, TOptions>
     >;
 
 // Tests
@@ -84,12 +83,12 @@ type method2Result = Expect<Equal<typeof method2Result, "c">>;
  * > https://github.com/microsoft/TypeScript/issues/26043
  * > https://github.com/microsoft/TypeScript/pull/17961 <!-- fml
  */
-type WrapHkt<T extends readonly any[]> = <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
-type Wrap<T extends readonly any[]> = <TFunc extends GenericFunction<any, any, any>>() => overload<T, TFunc>;
+export type WrapHkt<T extends readonly any[]> = <TFunc extends HKOperation>() => $overload<T, TFunc>;
+export type Wrap<T extends readonly any[]> = <TFunc extends GenericFunction<any, any, any>>() => overload<T, TFunc>;
 
 // Tests
 declare const wrap: WrapHkt<PossibleOptions>;
-type ApplyHktOverload<TFunc extends HKT> = ReturnType<typeof wrap<TFunc>>;
+type ApplyHktOverload<TFunc extends HKOperation> = ReturnType<typeof wrap<TFunc>>;
 declare const method3: ApplyHktOverload<$Foo>;
 const method3Result = method3('d'); // method3Result is of type "d"
 type method3Result = Expect<Equal<typeof method3Result, "d">>;

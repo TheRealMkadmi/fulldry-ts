@@ -1,41 +1,34 @@
 // workaround for https://github.com/microsoft/typeScript/issues/1213
 
-import { Assume, InstanceOf } from "./lies";
-import { InferredTuple } from "./primitives";
+import {Coerce} from "./lies";
+import {GenericFunction} from "./primitives";
+import {Reverse} from "./tuples";
 
-export type GenericFunction = (...x: never[]) => unknown;
-
-export abstract class HKT {
+export abstract class HKOperation {
     readonly _1?: unknown;
-    new!: GenericFunction;
+    new!: GenericFunction<any, any, any>;
 }
 
-export type Apply<F extends HKT, _1> = ReturnType<
+export type Apply<F extends HKOperation, _1> = ReturnType<
     (F & {
         readonly _1: _1;
     })["new"]
 >;
 
-export type MapTuple<X extends readonly unknown[], F extends HKT> = {
+export type Map<X extends readonly unknown[], F extends HKOperation> = {
     [K in keyof X]: Apply<F, X[K]>;
 };
 
-export type Reduce<HKTs extends HKT[], X> = HKTs extends []
+export type Reduce<HKTs extends HKOperation[], X> = HKTs extends []
     ? X
     : HKTs extends [infer Head, ...infer Tail]
-    ? Apply<Assume<Head, HKT>, Reduce<Assume<Tail, HKT[]>, X>>
+    ? Apply<Coerce<Head, HKOperation>, Reduce<Coerce<Tail, HKOperation[]>, X>>
     : never;
 
-interface Compose<HKTs extends HKT[]> extends HKT {
+interface Compose<HKTs extends HKOperation[]> extends HKOperation {
     new: (x: this["_1"]) => Reduce<HKTs, this["_1"]>;
 }
 
-export type Reverse<T extends unknown[]> = T extends []
-    ? []
-    : T extends [infer U, ...infer Rest]
-    ? [...Reverse<Rest>, U]
-    : never;
-
-export interface Flow<HKTs extends HKT[]> extends HKT {
+export interface Chain<HKTs extends HKOperation[]> extends HKOperation {
     new: (x: this["_1"]) => Reduce<Reverse<HKTs>, this["_1"]>;
 }
