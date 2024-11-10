@@ -5,7 +5,6 @@
 /**
  * TypeScript currently has neither generic values, higher kinded types, nor typeof on arbitrary expressions. 
  * Generics in TypeScript are sort of "shallow" that way. 
- * So as far as I know there's unfortunately no way to describe a type function that plugs type parameters into generic functions and checks the result
  */
 
 import { UnionToIntersection } from './transform';
@@ -14,7 +13,6 @@ import { Apply, Flow, HKT } from './hkt';
 import { Assume } from './lies';
 import { Equal, Expect } from './tests';
 import { TupleToUnion } from './tuples';
-
 
 
 // Just for testing purposes
@@ -80,16 +78,25 @@ type method2Result = Expect<Equal<typeof method2Result, "c">>;
 
 /**
  * Step 3: Making it even better, we'll wrap PossibleOptions and then pass just $Foo.
- * Dirty until we get at least https://github.com/tc39/proposal-partial-application in
- * https://github.com/microsoft/TypeScript/issues/37181
- * https://github.com/microsoft/TypeScript/issues/52035
- * ToyScript has neither generic values, higher kinded types
+ * Dirty until we get at least https://github.com/tc39/proposal-partial-application in, https://github.com/microsoft/TypeScript/issues/11233
+ * https://github.com/microsoft/TypeScript/issues/37181 -> https://github.com/microsoft/TypeScript/pull/47607
+ * https://github.com/microsoft/TypeScript/issues/40179
+ * > https://github.com/microsoft/TypeScript/issues/26043
+ * > https://github.com/microsoft/TypeScript/pull/17961 <!-- fml
  */
-
-type Wrap<T extends readonly any[]> = <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
-
-// https://github.com/microsoft/TypeScript/pull/47607
+type WrapHkt<T extends readonly any[]> = <TFunc extends HKT & { new: GenericFunction<any, any, any> }>() => $overload<T, TFunc>;
+type Wrap<T extends readonly any[]> = <TFunc extends GenericFunction<any, any, any>>() => overload<T, TFunc>;
 
 // Tests
-type test = Wrap<PossibleOptions>;
+declare const wrap: WrapHkt<PossibleOptions>;
+type ApplyHktOverload<TFunc extends HKT> = ReturnType<typeof wrap<TFunc>>;
+declare const method3: ApplyHktOverload<$Foo>;
+const method3Result = method3('d'); // method3Result is of type "d"
+type method3Result = Expect<Equal<typeof method3Result, "d">>;
+
+declare const wrap2: Wrap<PossibleOptions>;
+type ApplyOverload<TFunc extends GenericFunction<any, any, any>> = ReturnType<typeof wrap2<TFunc>>;
+declare const method4: ApplyOverload<Foo<TupleToUnion<PossibleOptions>>>;
+const method4Result = method4('b'); // method4Result is of type "b"
+type method4Result = Expect<Equal<typeof method4Result, "b">>;
 
