@@ -85,7 +85,7 @@ export class PetRepository {
   ) { }
 
   // Find Methods
-  async findAll(limit?: number, offset?: number): Promise<computeSelectShapeResult<Model['*'] & FilterSingleType>[]> {
+  async findAll(limit?: number, offset?: number): Promise<CompleteProjection[]> {
     return await e
       .select(this.model, (m) => ({
         ...m['*'],
