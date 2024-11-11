@@ -5,39 +5,41 @@ import e from '../../generated/syntax/';
 import { $overload, Coerce, HKOperation } from 'fulldry-utils';
 
 
-interface $RenderFindAll extends HKOperation {
-    new: (x: Coerce<this["_1"], unknown>) => <const T extends Coerce<this["_1"], unknown> & $expr_PathNode>(x: T) => Promise<ManyCompleteProjections<T>>;
-}
 
 
 interface $RenderFindAllIds extends HKOperation {
-    new: (x: Coerce<this["_1"], unknown>) => <const T extends Coerce<this["_1"], unknown> & $expr_PathNode>(x: T, limit?: number, offset?: number) => Promise<ModelIdentityArray>;
+    new: (x: Coerce<this["_1"], unknown>) =>
+        <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T, limit?: number, offset?: number)
+            => Promise<ModelIdentityArray>;
 }
-
 
 
 interface $RenderFindManyByIds extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], unknown> & $expr_PathNode,
+        const T extends Coerce<this["_1"], $expr_PathNode>,
     >(x: T, ids: string[]) => Promise<ManyCompleteProjections<T>>;
 }
 
 
 interface $RenderFindOneById extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) =>
-        <const T extends Coerce<this["_1"], unknown> & $expr_PathNode> (x: T, id: string)
+        <const T extends Coerce<this["_1"], $expr_PathNode>> (x: T, id: string)
             => Promise<OneCompleteProjection<T>>;
 }
 
-
 interface $RenderFindOneByIdWithProjection extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], unknown>,
+        const T extends Coerce<this["_1"], $expr_PathNode>,
         Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>,
     >(x: T, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => Promise<computeSelectShapeResult<T, Shape & FilterSingleType>>;
 }
+interface $RenderFindAll extends HKOperation {
+    new: (x: Coerce<this["_1"], $expr_PathNode>) => <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T) => Promise<ManyCompleteProjections<T>>;
+}
 
-class Wrapper<Models extends $expr_PathNode[]> {
+class Wrapper<
+    Models extends $expr_PathNode[],
+> {
     constructor(
         private readonly client: Client,
     ) { }
@@ -79,7 +81,7 @@ class Wrapper<Models extends $expr_PathNode[]> {
         }
     // @ts-expect-error
     findOneById: $overload<Models, $RenderFindOneById> =
-        async <T>(client: Client, model: T, id: string) => {
+        async <T>(model: T, id: string) => {
             return await e
                 .select(model, (m: any) => ({
                     ...m['*'],
@@ -101,6 +103,7 @@ class Wrapper<Models extends $expr_PathNode[]> {
 }
 const client = {} as Client;
 type ModelsTuple = [typeof e.Pet];
+
 const nam = new Wrapper<ModelsTuple>(client);
 const r = nam.findAll(e.Pet);
 const f = nam.findAllIds(e.Pet);
