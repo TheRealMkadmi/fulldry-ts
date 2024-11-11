@@ -1,78 +1,106 @@
 import { Client } from "edgedb";
 import { $expr_PathNode, objectTypeToSelectShape } from "../../generated/syntax/syntax";
-import { computeSelectShapeResult, ManyCompleteProjections, ModelScope, ModelTypeSet, OneCompleteProjection } from "../types";
+import { computeSelectShapeResult, ManyCompleteProjections, ModelIdentityArray, ModelScope, ModelTypeSet, OneCompleteProjection } from "../types";
 import e from '../../generated/syntax/';
 import { $overload, Coerce, HKOperation } from 'fulldry-utils';
 
+type ModelsTuple = [typeof e.Pet];
 
-type RenderFindAll<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(x: T) => Promise<ManyCompleteProjections<T>>;
 interface $RenderFindAll extends HKOperation {
-    new: (x: Coerce<this["_1"], any>) => RenderFindAll<Coerce<this["_1"], any>>;
+    new: (x: Coerce<this["_1"], unknown>) => <const T extends Coerce<this["_1"], unknown> & $expr_PathNode>(x: T) => Promise<ManyCompleteProjections<T>>;
 }
 
-type ModelsTuple = [typeof e.User, typeof e.Pet];
+// ____________
 
-const findAll: $overload<ModelsTuple, $RenderFindAll> = async <T>(model: T) => {
-    return await
-        e.select(model, (m: any) => ({
-            ...m['*']
-        }))
-            .run({} as Client);
+interface $RenderFindAllIds extends HKOperation {
+    new: (x: Coerce<this["_1"], unknown>) => <const T extends Coerce<this["_1"], unknown> & $expr_PathNode>(x: T, limit?: number, offset?: number) => Promise<ModelIdentityArray>;
 }
 
-const r = findAll(e.Pet);
+// ____________
 
 
+interface $RenderFindManyByIds extends HKOperation {
+    new: (x: Coerce<this["_1"], unknown>) => <
+        const T extends Coerce<this["_1"], unknown> & $expr_PathNode,
+    >(x: T, ids: string[]) => Promise<ManyCompleteProjections<T>>;
+}
+
+// ____________
+
+interface $RenderFindOneById extends HKOperation {
+    new: (x: Coerce<this["_1"], unknown>) =>
+        <const T extends Coerce<this["_1"], unknown> & $expr_PathNode> (x: T, id: string)
+            => Promise<OneCompleteProjection<T>>;
+}
+
+// ____________
+
+class Wrapper<Models extends $expr_PathNode[]> {
+    constructor(
+        private readonly client: Client,
+    ) { }
+    // @ts-expect-error
+    findAll: $overload<Models, $RenderFindAll> =
+        async <T>(model: T) => {
+            return await
+                e.select(model, (m: any) => ({
+                    ...m['*']
+                }))
+                    .run(this.client);
+        }
+
+    // @ts-expect-error
+    findAllIds: $overload<Models, $RenderFindAllIds> =
+        async <T>(model: T, limit?: number, offset?: number) => {
+            return await e
+                .select(model, (m: any) => ({
+                    ...m['*'],
+                    limit,
+                    offset,
+                }))
+                .run(this.client);
+        }
+
+    // @ts-expect-error
+    findManyByIds: $overload<Models, $RenderFindManyByIds> =
+        async <T>(model: T, ids: string[]) => {
+            return await e
+                .select(model, (m: any) => ({
+                    ...m['*'],
+                    filter: e.op(
+                        m.id,
+                        'in',
+                        e.array_unpack(e.literal(e.array(e.str), ids)),
+                    ),
+                }))
+                .run(this.client);
+        }
+    // @ts-expect-error
+    findOneById: $overload<Models, $RenderFindOneById> =
+        async <T>(client: Client, model: T, id: string) => {
+            return await e
+                .select(model, (m: any) => ({
+                    ...m['*'],
+                    filter_single: e.op(m.id, '=', e.literal(e.str, id)),
+                }))
+                .run(client);
+        }
+}
+const client = {} as Client;
+const nam = new Wrapper<ModelsTuple>(client);
+const r = nam.findAll(e.Pet);
+const f = nam.findAllIds(e.Pet);
+const g = nam.findManyByIds(e.Pet, ['1', '2']);
 
 
 
 // _____________
 
-type RenderFindAllIds<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(client: Client, x: T, limit?: number, offset?: number) => Promise<ModelIdentityArray>;
-const findAllIds: $overload<RenderFindAllIds<Models>> =
-    async <T>(client: Client, model: T, limit?: number, offset?: number) => {
-        return await e
-            .select(model, (m: any) => ({
-                ...m['*'],
-                limit,
-                offset,
-            }))
-            .run(client);
-    }
 
-// _____________
 
-type RenderFindManyByIds<OneOfPossibleOptions> = <
-    const T extends OneOfPossibleOptions & $expr_PathNode,
->(client: Client, x: T, ids: string[]) => Promise<ManyCompleteProjections<T>>;
 
-const findManyByIds: $overload<RenderFindManyByIds<Models>> =
-    async <T>(client: Client, model: T, ids: string[]) => {
-        return await e
-            .select(model, (m: any) => ({
-                ...m['*'],
-                filter: e.op(
-                    m.id,
-                    'in',
-                    e.array_unpack(e.literal(e.array(e.str), ids)),
-                ),
-            }))
-            .run(client);
-    }
 
-// _____________
 
-type RenderFindOneById<OneOfPossibleOptions> = <
-    const T extends OneOfPossibleOptions & $expr_PathNode> (client: Client, x: T, id: string) => Promise<OneCompleteProjection<T>>;
-const findOneById: $overload<RenderFindOneById<Models>> =
-    async <T>(client: Client, model: T, id: string) => {
-        return await e
-            .select(model, (m: any) => ({
-                ...m['*'],
-                filter_single: e.op(m.id, '=', e.literal(e.str, id)),
-            }))
-            .run(client);
-    }
 
 // _____________
 
