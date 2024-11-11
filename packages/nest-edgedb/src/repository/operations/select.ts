@@ -22,6 +22,10 @@ const findAll: $overload<ModelsTuple, $RenderFindAll> = async <T>(model: T) => {
 
 const r = findAll(e.Pet);
 
+
+
+
+
 // _____________
 
 type RenderFindAllIds<OneOfPossibleOptions> = <const T extends OneOfPossibleOptions & $expr_PathNode>(client: Client, x: T, limit?: number, offset?: number) => Promise<ModelIdentityArray>;
