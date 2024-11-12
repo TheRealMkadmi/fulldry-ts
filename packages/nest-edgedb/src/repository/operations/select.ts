@@ -2,7 +2,7 @@ import { Client } from "edgedb";
 import { $expr_PathNode, objectTypeToSelectShape } from "../../generated/syntax/syntax";
 import { computeSelectShapeResult, FilterSingleType, ManyCompleteProjections, ModelIdentityArray, ModelScope, ModelTypeSet, OneCompleteProjection } from "../types";
 import e from '../../generated/syntax/';
-import { $overload, Coerce, createAbstraction, HKOperation } from 'fulldry-utils';
+import { $overload, Coerce, createTypedPartialHelper, HKOperation } from 'fulldry-utils';
 
 
 interface $RenderFindAllIds extends HKOperation {
@@ -120,8 +120,8 @@ type ModelsTuple = [typeof e.Pet];
 
 const entityManager = new EntityManager<ModelsTuple>(client);
 
-const pets = entityManager.findOneByIdWithProjection(e.Pet, '123', (m) => ({
-    name: m.name,
-}));
+const pets = entityManager.findAll(e.Pet); //const pets: Promise<{ id: string; name: string; age: number; }[]>
 
+const repo = createTypedPartialHelper(entityManager, e.Pet, ['findAll']);
+const pets2 = repo.findAll(); // const pets2: Promise<unknown>
 
