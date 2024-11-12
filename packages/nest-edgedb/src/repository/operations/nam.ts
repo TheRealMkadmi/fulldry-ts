@@ -26,7 +26,6 @@ export class EntityManager<
     }
 
     getRepository<M extends $expr_PathNode>(model: M): Repository<M> {
-        // Create a proxy to bind the model parameter to the methods
         const handler: ProxyHandler<this> = {
             get(target, prop, receiver) {
                 const origMethod = target[prop as keyof EntityManager<Models>];
