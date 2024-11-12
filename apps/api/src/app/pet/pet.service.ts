@@ -27,8 +27,10 @@ export class PetService {
   async test() {
 
 
-    const nam = new BaseRepository<'Pet'>('Pet', this.client);
+    const nam = new PetRepository({} as Client);
 
     const k = await nam.findAll();
+
+    const tesss = await nam.findByBackLink('<pets[is User]', '1');
   }
 }

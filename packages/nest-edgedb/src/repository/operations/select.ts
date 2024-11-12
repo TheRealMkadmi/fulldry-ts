@@ -37,6 +37,16 @@ interface $RenderFindAll extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T) => Promise<ManyCompleteProjections<T>>;
 }
 
+type MethodNames = 'findAll' | 'findAllIds' | 'findManyByIds' | 'findOneById' | 'findOneByIdWithProjection';
+
+type Repository<T extends $expr_PathNode> = {
+    [K in MethodNames]: K extends keyof EntityManager<any>
+    ? EntityManager<any>[K] extends (model: T, ...args: infer P) => infer R
+    ? (...args: P) => R
+    : never
+    : never;
+};
+
 export class EntityManager<
     Models extends $expr_PathNode[],
 > {
@@ -50,9 +60,8 @@ export class EntityManager<
             e.select(model, (m: any) => ({
                 ...m['*']
             }))
-                .run(client);
+                .run(this.client);
     }
-
 
     // @ts-expect-error
     findAllIds: $overload<Models, $RenderFindAllIds> =
@@ -88,7 +97,7 @@ export class EntityManager<
                     ...m['*'],
                     filter_single: e.op(m.id, '=', e.literal(e.str, id)),
                 }))
-                .run(client);
+                .run(this.client);
         }
 
     // @ts-expect-error
@@ -99,39 +108,20 @@ export class EntityManager<
                     ...shape(m),
                     filter_single: e.op(m.id, '=', e.literal(e.str, id)),
                 }))
-                .run(client);
+                .run(this.client);
         }
 
-    getRepository<T extends Models[number]>(model: T): Repository<T> {
-        const self: any = this;
-        return {
-            findAll: () => self.findAll(model),
-            findAllIds: (limit?: number, offset?: number) => self.findAllIds(model, limit, offset),
-            findManyByIds: (ids: string[]) => self.findManyByIds(model, ids),
-            findOneById: (id: string) => self.findOneById(model, id),
-            findOneByIdWithProjection: (id, shape) => self.findOneByIdWithProjection(model, id, shape),
-        };
-    }
 }
 
 
-interface Repository<T extends $expr_PathNode> {
-    findAll(): Promise<ManyCompleteProjections<T>>;
-    findAllIds(limit?: number, offset?: number): Promise<ModelIdentityArray>;
-    findManyByIds(ids: string[]): Promise<ManyCompleteProjections<T>>;
-    findOneById(id: string): Promise<OneCompleteProjection<T>>;
-    findOneByIdWithProjection<Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>>(
-        id: string,
-        shape: (scope: ModelScope<T>) => Readonly<Shape>
-    ): Promise<computeSelectShapeResult<T, Shape & FilterSingleType>>;
-}
-
-
+// Usage:
 const client = {} as Client;
 type ModelsTuple = [typeof e.Pet];
 
 const entityManager = new EntityManager<ModelsTuple>(client);
-const test = entityManager.findAll(e.Pet); // Promise<{ id: string; name: string; }[]>
 
-const r = entityManager.getRepository(e.Pet);
-const test2 = r.findAll(); // Promise<{ id: string; name: string; }[]>
+const pets = entityManager.findOneByIdWithProjection(e.Pet, '123', (m) => ({
+    name: m.name,
+}));
+
+
