@@ -2,7 +2,7 @@ import { Client } from "edgedb";
 import { $expr_PathNode, objectTypeToSelectShape } from "../../generated/syntax/syntax";
 import { computeSelectShapeResult, FilterSingleType, ManyCompleteProjections, ModelIdentityArray, ModelScope, ModelTypeSet, OneCompleteProjection } from "../types";
 import e from '../../generated/syntax/';
-import { $overload, Coerce, createTypedPartialHelper, HKOperation } from 'fulldry-utils';
+import { $overload, Coerce, createAbstraction, HKOperation } from 'fulldry-utils';
 
 
 interface $RenderFindAllIds extends HKOperation {
@@ -39,89 +39,60 @@ interface $RenderFindAll extends HKOperation {
 
 type MethodNames = 'findAll' | 'findAllIds' | 'findManyByIds' | 'findOneById' | 'findOneByIdWithProjection';
 
-type Repository<T extends $expr_PathNode> = {
-    [K in MethodNames]: K extends keyof EntityManager<any>
-    ? EntityManager<any>[K] extends (model: T, ...args: infer P) => infer R
-    ? (...args: P) => R
-    : never
-    : never;
+type ModelsTuple = [typeof e.Pet, typeof e.User];
+
+const client = {} as Client;
+
+const findAll: $overload<ModelsTuple, $RenderFindAll> = async <T>(model: T) => {
+    return await
+        e.select(model, (m: any) => ({
+            ...m['*']
+        }))
+            .run(client);
 };
 
-export class EntityManager<
-    Models extends $expr_PathNode[],
-> {
-    constructor(
-        private readonly client: Client,
-    ) { }
-
-    // @ts-expect-error
-    findAll: $overload<Models, $RenderFindAll> = async <T>(model: T) => {
-        return await
-            e.select(model, (m: any) => ({
-                ...m['*']
+const findAllIds: $overload<ModelsTuple, $RenderFindAllIds> =
+    async <T>(model: T, limit?: number, offset?: number) => {
+        return await e
+            .select(model, (m: any) => ({
+                ...m['*'],
+                limit,
+                offset,
             }))
-                .run(this.client);
+            .run(client);
     }
 
-    // @ts-expect-error
-    findAllIds: $overload<Models, $RenderFindAllIds> =
-        async <T>(model: T, limit?: number, offset?: number) => {
-            return await e
-                .select(model, (m: any) => ({
-                    ...m['*'],
-                    limit,
-                    offset,
-                }))
-                .run(this.client);
-        }
+const findManyByIds: $overload<ModelsTuple, $RenderFindManyByIds> =
+    async <T>(model: T, ids: string[]) => {
+        return await e
+            .select(model, (m: any) => ({
+                ...m['*'],
+                filter: e.op(
+                    m.id,
+                    'in',
+                    e.array_unpack(e.literal(e.array(e.str), ids)),
+                ),
+            }))
+            .run(client);
+    }
 
-    // @ts-expect-error
-    findManyByIds: $overload<Models, $RenderFindManyByIds> =
-        async <T>(model: T, ids: string[]) => {
-            return await e
-                .select(model, (m: any) => ({
-                    ...m['*'],
-                    filter: e.op(
-                        m.id,
-                        'in',
-                        e.array_unpack(e.literal(e.array(e.str), ids)),
-                    ),
-                }))
-                .run(this.client);
-        }
-    // @ts-expect-error
-    findOneById: $overload<Models, $RenderFindOneById> =
-        async <T>(model: T, id: string) => {
-            return await e
-                .select(model, (m: any) => ({
-                    ...m['*'],
-                    filter_single: e.op(m.id, '=', e.literal(e.str, id)),
-                }))
-                .run(this.client);
-        }
+const findOneById: $overload<ModelsTuple, $RenderFindOneById> =
+    async <T>(model: T, id: string) => {
+        return await e
+            .select(model, (m: any) => ({
+                ...m['*'],
+                filter_single: e.op(m.id, '=', e.literal(e.str, id)),
+            }))
+            .run(client);
+    }
 
-    // @ts-expect-error
-    findOneByIdWithProjection: $overload<Models, $RenderFindOneByIdWithProjection> =
-        async <T, Shape>(model: T, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => {
-            return await e
-                .select(model, (m: any) => ({
-                    ...shape(m),
-                    filter_single: e.op(m.id, '=', e.literal(e.str, id)),
-                }))
-                .run(this.client);
-        }
-
-}
-
-
-// Usage:
-const client = {} as Client;
-type ModelsTuple = [typeof e.Pet];
-
-const entityManager = new EntityManager<ModelsTuple>(client);
-
-const pets = entityManager.findAll(e.Pet); //const pets: Promise<{ id: string; name: string; age: number; }[]>
-
-const repo = createTypedPartialHelper(entityManager, e.Pet, ['findAll']);
-const pets2 = repo.findAll(); // const pets2: Promise<unknown>
+const findOneByIdWithProjection: $overload<ModelsTuple, $RenderFindOneByIdWithProjection> =
+    async <T, Shape>(model: T, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => {
+        return await e
+            .select(model, (m: any) => ({
+                ...shape(m),
+                filter_single: e.op(m.id, '=', e.literal(e.str, id)),
+            }))
+            .run(client);
+    }
 

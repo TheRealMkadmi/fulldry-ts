@@ -9,51 +9,15 @@ interface $RenderFindAll extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T) => Promise<ManyCompleteProjections<T>>;
 }
 
-export class EntityManager<
-    Models extends $expr_PathNode[],
-> {
-    constructor(
-        private readonly client: Client,
-    ) { }
-
-    // @ts-expect-error
-    findAll: $overload<Models, $RenderFindAll> = async <T>(model: T) => {
-        return await
-            e.select(model, (m: any) => ({
-                ...m['*']
-            }))
-                .run(this.client);
-    }
-
-    getRepository<M extends $expr_PathNode>(model: M): Repository<M> {
-        const handler: ProxyHandler<this> = {
-            get(target, prop, receiver) {
-                const origMethod = target[prop as keyof EntityManager<Models>];
-                if (typeof origMethod === 'function') {
-                    return origMethod.bind(target, model);
-                }
-                return origMethod;
-            }
-        };
-        return new Proxy(this, handler) as Repository<M>;
-    }
+const findAll: $overload<ModelsTuple, $RenderFindAll> = async <T>(model: T) => {
+    return await
+        e.select(model, (m: any) => ({
+            ...m['*']
+        }))
+            .run(client);
 }
-
-type Repository<M extends $expr_PathNode> = Omit<EntityManager<ModelsTuple>, 'findAll' | 'getRepository'> & {
-    findAll: () => Promise<ManyCompleteProjections<M>>;
-    // Add other methods here, omitting the model parameter
-};
 
 
 // Usage:
 const client = {} as Client;
-type ModelsTuple = [typeof e.Pet];
-
-const entityManager = new EntityManager<ModelsTuple>(client);
-
-const pets = entityManager.findAll(e.Pet); //const pets: Promise<{ id: string; name: string; age: number; }[]>
-
-
-const r = entityManager.getRepository(e.Pet);
-
-const ra = r.findAll(); 
+type ModelsTuple = [typeof e.Pet, typeof e.User];
