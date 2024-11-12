@@ -24,7 +24,26 @@ export class EntityManager<
             }))
                 .run(this.client);
     }
+
+    getRepository<M extends $expr_PathNode>(model: M): Repository<M> {
+        // Create a proxy to bind the model parameter to the methods
+        const handler: ProxyHandler<this> = {
+            get(target, prop, receiver) {
+                const origMethod = target[prop as keyof EntityManager<Models>];
+                if (typeof origMethod === 'function') {
+                    return origMethod.bind(target, model);
+                }
+                return origMethod;
+            }
+        };
+        return new Proxy(this, handler) as Repository<M>;
+    }
 }
+
+type Repository<M extends $expr_PathNode> = Omit<EntityManager<ModelsTuple>, 'findAll' | 'getRepository'> & {
+    findAll: () => Promise<ManyCompleteProjections<M>>;
+    // Add other methods here, omitting the model parameter
+};
 
 
 // Usage:
@@ -35,3 +54,7 @@ const entityManager = new EntityManager<ModelsTuple>(client);
 
 const pets = entityManager.findAll(e.Pet); //const pets: Promise<{ id: string; name: string; age: number; }[]>
 
+
+const r = entityManager.getRepository(e.Pet);
+
+const ra = r.findAll(); 
