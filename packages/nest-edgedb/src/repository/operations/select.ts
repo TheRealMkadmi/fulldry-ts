@@ -5,54 +5,14 @@ import e from '../../generated/syntax/';
 import { $overload, Coerce, HKOperation } from 'fulldry-utils';
 
 
-interface $RenderFindAllIds extends HKOperation {
+export interface $RenderFindAllIds extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) =>
         <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T, limit?: number, offset?: number)
             => Promise<ModelIdentityArray>;
 }
 
-
-interface $RenderFindManyByIds extends HKOperation {
-    new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
-    >(x: T, ids: string[]) => Promise<ManyCompleteProjections<T>>;
-}
-
-
-interface $RenderFindOneById extends HKOperation {
-    new: (x: Coerce<this["_1"], unknown>) =>
-        <const T extends Coerce<this["_1"], $expr_PathNode>> (x: T, id: string)
-            => Promise<OneCompleteProjection<T>>;
-}
-
-interface $RenderFindOneByIdWithProjection extends HKOperation {
-    new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
-        Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>,
-    >(x: T, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => Promise<computeSelectShapeResult<T, Shape & FilterSingleType>>;
-}
-
-
-interface $RenderFindAll extends HKOperation {
-    new: (x: Coerce<this["_1"], $expr_PathNode>) => <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T) => Promise<ManyCompleteProjections<T>>;
-}
-
-type MethodNames = 'findAll' | 'findAllIds' | 'findManyByIds' | 'findOneById' | 'findOneByIdWithProjection';
-
-type ModelsTuple = [typeof e.Pet, typeof e.User];
-
-const client = {} as Client;
-
-const findAll: $overload<ModelsTuple, $RenderFindAll> = async <T>(model: T) => {
-    return await
-        e.select(model, (m: any) => ({
-            ...m['*']
-        }))
-            .run(client);
-};
-
-const findAllIds: $overload<ModelsTuple, $RenderFindAllIds> =
-    async <T>(model: T, limit?: number, offset?: number) => {
+export const findAllIds =
+    async <T>(model: T, client: Client, limit?: number, offset?: number) => {
         return await e
             .select(model, (m: any) => ({
                 ...m['*'],
@@ -62,8 +22,17 @@ const findAllIds: $overload<ModelsTuple, $RenderFindAllIds> =
             .run(client);
     }
 
-const findManyByIds: $overload<ModelsTuple, $RenderFindManyByIds> =
-    async <T>(model: T, ids: string[]) => {
+
+// _____________________________
+
+export interface $RenderFindManyByIds extends HKOperation {
+    new: (x: Coerce<this["_1"], unknown>) => <
+        const T extends Coerce<this["_1"], $expr_PathNode>,
+    >(x: T, client: Client, ids: string[]) => Promise<ManyCompleteProjections<T>>;
+}
+
+export const findManyByIds =
+    async <T>(model: T, client: Client, ids: string[]) => {
         return await e
             .select(model, (m: any) => ({
                 ...m['*'],
@@ -76,8 +45,16 @@ const findManyByIds: $overload<ModelsTuple, $RenderFindManyByIds> =
             .run(client);
     }
 
-const findOneById: $overload<ModelsTuple, $RenderFindOneById> =
-    async <T>(model: T, id: string) => {
+// _____________________________
+
+export interface $RenderFindOneById extends HKOperation {
+    new: (x: Coerce<this["_1"], unknown>) =>
+        <const T extends Coerce<this["_1"], $expr_PathNode>> (x: T, client: Client, id: string)
+            => Promise<OneCompleteProjection<T>>;
+}
+
+export const findOneById =
+    async <T>(model: T, client: Client, id: string) => {
         return await e
             .select(model, (m: any) => ({
                 ...m['*'],
@@ -86,8 +63,17 @@ const findOneById: $overload<ModelsTuple, $RenderFindOneById> =
             .run(client);
     }
 
-const findOneByIdWithProjection: $overload<ModelsTuple, $RenderFindOneByIdWithProjection> =
-    async <T, Shape>(model: T, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => {
+// _____________________________
+
+export interface $RenderFindOneByIdWithProjection extends HKOperation {
+    new: (x: Coerce<this["_1"], unknown>) => <
+        const T extends Coerce<this["_1"], $expr_PathNode>,
+        Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>,
+    >(x: T, client: Client, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => Promise<computeSelectShapeResult<T, Shape & FilterSingleType>>;
+}
+
+export const findOneByIdWithProjection =
+    async <T, Shape>(model: T, client: Client, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => {
         return await e
             .select(model, (m: any) => ({
                 ...shape(m),
@@ -95,4 +81,25 @@ const findOneByIdWithProjection: $overload<ModelsTuple, $RenderFindOneByIdWithPr
             }))
             .run(client);
     }
+
+// _____________________________
+
+export interface $RenderFindAll extends HKOperation {
+    new: (x: Coerce<this["_1"], $expr_PathNode>) => <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T, c: Client) => Promise<ManyCompleteProjections<T>>;
+}
+
+export const findAll = async <T>(model: T, client: Client) => {
+    return await
+        e.select(model, (m: any) => ({
+            ...m['*']
+        }))
+            .run(client);
+};
+
+// _____________________________
+
+
+
+
+
 
