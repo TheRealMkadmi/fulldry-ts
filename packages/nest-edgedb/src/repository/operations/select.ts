@@ -2,7 +2,7 @@ import { Client } from "edgedb";
 import { $expr_PathNode, objectTypeToSelectShape } from "../../generated/syntax/syntax";
 import { computeSelectShapeResult, FilterSingleType, ManyCompleteProjections, ModelIdentityArray, ModelScope, ModelTypeSet, OneCompleteProjection } from "../types";
 import e from '../../generated/syntax/';
-import { $overload, Coerce, createAbstraction, HKOperation } from 'fulldry-utils';
+import { $overload, Coerce, HKOperation } from 'fulldry-utils';
 
 
 interface $RenderFindAllIds extends HKOperation {
