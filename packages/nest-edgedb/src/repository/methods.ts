@@ -18,7 +18,6 @@ import { Cardinality } from 'edgedb/dist/reflection';
 import { UpdateShape } from '../generated/syntax/update';
 import { PaginateResult } from 'common';
 
-import { RenderFunction, ConvertTupleOfPossibleOptionsToOverloadsIntersection, ValuesTuple, TupleToUnion } from 'fulldry-utils';
 import {
     BackLinks,
     computeSelectShapeResult, FilterCallable, FilterSingleType, FilterType,
@@ -28,9 +27,6 @@ import {
     OneCompleteProjection,
 } from './types';
 
-import { Pet, User } from 'dbschema/edgeql-js/modules/default';
-
-import __defaultExports from 'dbschema/edgeql-js/modules/default';
 
 
 // _________________________________
