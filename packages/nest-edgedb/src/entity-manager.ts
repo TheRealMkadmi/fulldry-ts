@@ -1,13 +1,8 @@
 import { Client } from "edgedb";
-import { $expr_PathNode, objectTypeToSelectShape } from "./generated/syntax/syntax";
+import { $expr_PathNode } from "./generated/syntax/syntax";
 import e from './generated/syntax';
-import { $overload, Equal, Expect } from 'fulldry-utils';
+import { $overload } from 'fulldry-utils';
 import { $RenderFindAll, $RenderFindOneById, $RenderFindOneByIdWithProjection, findAll, findOneById, findOneByIdWithProjection } from "./repository/operations/select";
-import { ModelScope, ModelTypeSet } from "./repository/types";
-
-
-
-
 
 const client = {} as Client;
 
@@ -27,35 +22,15 @@ type MethodNames<ClassType> = {
 type EntityManagerMethodNames<T extends $expr_PathNode> = MethodNames<NarrowEntityManager<T>>;
 type EntityManagerMethod<TModel extends $expr_PathNode, TMethod extends EntityManagerMethodNames<TModel>> = NarrowEntityManager<TModel>[TMethod];
 
-// ________
-
-const em2 = new EntityManager<[typeof e.Pet]>();
-
-const petWithProj = em2.findOneByIdWithProjection(e.Pet, client, '1', (m) => ({
-    age: true
-}));
 
 type FunctionSignature = ReturnType<$RenderFindOneByIdWithProjection["new"]>;
 
-// ______________
+
 
 declare const test: FunctionSignature;
 //               ^? <const T extends $expr_PathNode, Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>>(x: T, client: Client, id: string, shape: (scope: ModelScope<T>) => Readonly<Shape>) => Promise<computeSelectShapeResult<T, Shape & FilterSingleType>>
 
 
-type ConcreteFunc<T extends $expr_PathNode, Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>> = typeof test<T, Shape>;
+type m = ReturnType<typeof test<typeof e.Pet, { age: true }>>;
 
-declare const m: ConcreteFunc<typeof e.Pet, { age: true }>;
 
-function inferConcreteFunc<T extends $expr_PathNode, Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>>(
-    fn: ConcreteFunc<T, Shape>,
-    x: T,
-    client: Client
-) {
-    return (id: string, shape: Parameters<ConcreteFunc<T, Shape>>[3]) =>
-        fn(x, client, id, shape);
-}
-
-// Example Usage
-const inferredM = inferConcreteFunc(m, e.Pet, client);
-const inferredResult = inferredM('1', (m) => ({ age: true }));
