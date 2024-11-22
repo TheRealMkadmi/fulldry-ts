@@ -47,17 +47,15 @@ type ConcreteFunc<T extends $expr_PathNode, Shape extends objectTypeToSelectShap
 
 declare const m: ConcreteFunc<typeof e.Pet, { age: true }>;
 
-const k = m.bind(em2, e.Pet, client);
+function inferConcreteFunc<T extends $expr_PathNode, Shape extends objectTypeToSelectShape<ModelTypeSet<T>["__element__"]>>(
+    fn: ConcreteFunc<T, Shape>,
+    x: T,
+    client: Client
+) {
+    return (id: string, shape: Parameters<ConcreteFunc<T, Shape>>[3]) =>
+        fn(x, client, id, shape);
+}
 
-const l = m(e.Pet, client, '1', (m) => ({
-    age: true
-}));
-
-const n = k('1', (m) => ({
-    age: true
-}));
-
-type o = Expect<Equal<typeof l, typeof n>>;
-
-// ______________
-
+// Example Usage
+const inferredM = inferConcreteFunc(m, e.Pet, client);
+const inferredResult = inferredM('1', (m) => ({ age: true }));
