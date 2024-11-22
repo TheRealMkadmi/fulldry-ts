@@ -74,15 +74,19 @@ const petWithProj = em2.findOneByIdWithProjection(e.Pet, client, '1', (m) => ({
     age: true
 }));
 
-// Wrap the findOneByIdWithProjection method
-const wrapped = <Shape extends objectTypeToSelectShape<ModelTypeSet<typeof e.Pet>["__element__"]>>(
-    id: string, shape: (scope: ModelScope<typeof e.Pet>) => Readonly<Shape>
+const wrappedAuto = <
+    Shape extends objectTypeToSelectShape<ModelTypeSet<typeof e.Pet>["__element__"]>
+>(
+    id: string,
+    shape: (scope: ModelScope<typeof e.Pet>) => Readonly<Shape>
 ) => em2.findOneByIdWithProjection(e.Pet, client, id, shape);
 
-// Use the wrapped function
-const petWithProj1 = wrapped('1', (m) => ({
+
+// Usage
+const petWithProjAuto1 = wrappedAuto('1', (m) => ({
     age: m.age
 }));
 
 // Type assertion to ensure types match
-type ___ = Expect<Equal<typeof petWithProj, typeof petWithProj1>>;
+type ___ = Expect<Equal<typeof petWithProj, typeof petWithProjAuto1>>;
+
