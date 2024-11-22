@@ -26,8 +26,7 @@ import {
     ModelTypeSet, NumericFields,
     OneCompleteProjection,
 } from './types';
-
-
+type Models = typeof Pet | typeof User;
 
 // _________________________________
 
@@ -56,24 +55,24 @@ type RenderFindByBackLink<OneOfPossibleOptions> = <
     id: string
 ) => Promise<ManyCompleteProjections<T>>;
 
-const findByBackLink: $overload<RenderFindByBackLink<Models>> =
-    async <T, K extends keyof BackLinks<T>>(
-        client: Client,
-        model: T,
-        backlink: K,
-        id: string
-    ) => {
-        return await e
-            .select(model, (m: any) => ({
-                ...m['*'],
-                filter: e.op(
-                    m[backlink]['id'],
-                    '=',
-                    e.literal(e.str, id)
-                ),
-            }))
-            .run(client);
-    };
+const findByBackLink: <RenderFindByBackLink<Models>> =
+async <T, K extends keyof BackLinks<T>>(
+    client: Client,
+    model: T,
+    backlink: K,
+    id: string
+) => {
+    return await e
+        .select(model, (m: any) => ({
+            ...m['*'],
+            filter: e.op(
+                m[backlink]['id'],
+                '=',
+                e.literal(e.str, id)
+            ),
+        }))
+        .run(client);
+};
 
 // Find Method
 type RenderFind<OneOfPossibleOptions> = <
