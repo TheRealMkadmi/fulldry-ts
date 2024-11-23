@@ -1,4 +1,3 @@
-import { Client } from "edgedb";
 import { $expr_PathNode } from "./generated/syntax/syntax";
 import { $overload } from 'fulldry-utils';
 import { $RenderFindAll, $RenderFindOneById, $RenderFindOneByIdWithProjection, findAll, findOneById, findOneByIdWithProjection } from "./operations/select";
