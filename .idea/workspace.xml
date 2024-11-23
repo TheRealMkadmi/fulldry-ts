@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac5003a4-5d44-412a-85dc-ade47ac40f1f" name="Changes" comment="ezzaboubia">
-      <change beforePath="$PROJECT_DIR$/packages/fulldry-utils/src/overload.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/fulldry-utils/src/overload.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/nest-edgedb/src/tests.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/nest-edgedb/src/operations/aggregate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/nest-edgedb/src/operations/aggregate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/nest-edgedb/src/repository.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/nest-edgedb/src/repository.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +98,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Wahib/Desktop/Workbench/repos/fulldry-ts/packages/fulldry-utils",
+    "last_opened_file_path": "C:/Users/Wahib/Desktop/Workbench/repos/fulldry-ts",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -194,7 +197,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-410509235cf1-JavaScript-WS-242.20224.342" />
+        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-WS-242.21829.149" />
       </set>
     </attachedChunks>
   </component>

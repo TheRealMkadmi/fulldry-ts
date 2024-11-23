@@ -1,6 +1,6 @@
 import { Client } from "edgedb";
 import { HKOperation, Coerce } from "packages/fulldry-utils/dist/fulldry-utils.cjs";
-import { $expr_PathNode } from "../generated/syntax/reflection";
+import { $expr_PathNode } from '../generated/syntax/path';
 import { NumericFields, FilterCallable } from "./types";
 import e from '../generated/syntax';
 
