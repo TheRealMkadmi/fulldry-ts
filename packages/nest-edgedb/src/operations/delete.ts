@@ -6,17 +6,17 @@ import e from '../generated/syntax';
 
 export interface $RenderDeleteSingle extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>
+        const T extends $expr_PathNode
     >(
+        x: T,
         client: Client,
-        model: T,
         id: string
     ) => Promise<ModelIdentity>;
 }
 
 export const deleteOne = async <T>(
-    client: Client,
     model: T & $expr_PathNode,
+    client: Client,
     id: string
 ) => {
     return await e
@@ -30,17 +30,17 @@ export const deleteOne = async <T>(
 
 export interface $RenderDeleteMultiple extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>
+        const T extends $expr_PathNode
     >(
+        x: T,
         client: Client,
-        model: T & $expr_PathNode,
         ids: string[]
     ) => Promise<ModelIdentity[]>;
 }
 
 export const deleteMany = async <T>(
-    client: Client,
     model: T & $expr_PathNode,
+    client: Client,
     ids: string[]
 ) => {
     return await e

@@ -1,10 +1,10 @@
-import { $expr_PathNode, group, insert, update } from "./generated/syntax/syntax";
+import { $expr_PathNode, insert, update } from "./generated/syntax/syntax";
 import { $overload } from 'fulldry-utils';
 import { $RenderCount, $RenderExists, $RenderFind, $RenderFindAll, $RenderFindAllIds, $RenderFindManyByIds, $RenderFindOneById, $RenderFindOneByIdWithProjection, $RenderPaginate, count, exists, findAll, findAllIds, findManyByIds, findOneById, findOneByIdWithProjection } from "./operations/select";
 import { sum, min, max } from "ramda";
 import { $RenderSum, $RenderMin, $RenderMax } from "./operations/aggregate";
 import { $RenderDeleteSingle, deleteOne, $RenderDeleteMultiple, deleteMany } from "./operations/delete";
-import { $RenderGroup } from "./operations/group";
+import { $RenderGroup, group } from "./operations/group";
 import { $RenderInsertSingle, $RenderInsertMultiple, insertMany } from "./operations/insert";
 import { $RenderUpdate, $RenderUpdateMany, updateMany } from "./operations/update";
 

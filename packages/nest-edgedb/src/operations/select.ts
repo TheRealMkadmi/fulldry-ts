@@ -8,7 +8,7 @@ import { PaginateResult } from "packages/common/src/types/pagination";
 
 export interface $RenderFindAllIds extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) =>
-        <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T, limit?: number, offset?: number)
+        <const T extends $expr_PathNode>(x: T, client: Client, limit?: number, offset?: number)
             => Promise<ModelIdentityArray>;
 }
 
@@ -28,7 +28,7 @@ export const findAllIds =
 
 export interface $RenderFindManyByIds extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
+        const T extends $expr_PathNode,
     >(x: T, client: Client, ids: string[]) => Promise<ManyCompleteProjections<T>>;
 }
 
@@ -50,7 +50,7 @@ export const findManyByIds =
 
 export interface $RenderFindOneById extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) =>
-        <const T extends Coerce<this["_1"], $expr_PathNode>> (x: T, client: Client, id: string)
+        <const T extends $expr_PathNode> (x: T, client: Client, id: string)
             => Promise<OneCompleteProjection<T>>;
 }
 
@@ -87,7 +87,7 @@ export const findOneByIdWithProjection =
 
 export interface $RenderFindAll extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) =>
-        <const T extends Coerce<this["_1"], $expr_PathNode>>(x: T, c: Client) => Promise<ManyCompleteProjections<T>>;
+        <const T extends $expr_PathNode>(x: T, client: Client) => Promise<ManyCompleteProjections<T>>;
 }
 
 export const findAll = async <T>(model: T, client: Client) => {
@@ -109,19 +109,19 @@ export const findAll = async <T>(model: T, client: Client) => {
 
 export interface $RenderFindByBackLink extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
+        const T extends $expr_PathNode,
         K extends keyof BackLinks<T>
     >(
+        x: T,
         client: Client,
-        model: T,
         backlink: K,
         id: string
     ) => Promise<ManyCompleteProjections<T>>;
 }
 
 export const findByBackLink = async <T, K extends keyof BackLinks<T>>(
-    client: Client,
     model: T,
+    client: Client,
     backlink: K,
     id: string
 ) => {
@@ -141,18 +141,18 @@ export const findByBackLink = async <T, K extends keyof BackLinks<T>>(
 
 export interface $RenderFind extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
+        const T extends $expr_PathNode,
         Shape extends ModelSelectShape<T>
     >(
+        x: T,
         client: Client,
-        model: T,
         shape: (scope: ModelScope<T>) => Readonly<Shape>
     ) => Promise<computeSelectShapeResult<T, Shape>>;
 }
 
 export const find = async <T, Shape>(
-    client: Client,
     model: T & $expr_PathNode,
+    client: Client,
     shape: (scope: ModelScope<T>) => Readonly<Shape>
 ) => {
     return await e.select(model as any, shape).run(client);
@@ -162,11 +162,11 @@ export const find = async <T, Shape>(
 
 export interface $RenderPaginate extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
+        const T extends $expr_PathNode,
         Shape extends ModelSelectShape<T>
     >(
+        x: T,
         client: Client,
-        model: T,
         shape: (scope: ModelScope<T>) => Readonly<Shape>,
         limit: number,
         offset: number
@@ -174,8 +174,8 @@ export interface $RenderPaginate extends HKOperation {
 }
 
 export const paginate = async <T, Shape>(
-    client: Client,
     model: T & $expr_PathNode,
+    client: Client,
     shape: (scope: ModelScope<T>) => Readonly<Shape>,
     limit: number,
     offset: number
@@ -210,17 +210,17 @@ export const paginate = async <T, Shape>(
 
 export interface $RenderCount extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>
+        const T extends $expr_PathNode
     >(
-        client: Client,
         model: T,
+        client: Client,
         filter?: FilterCallable<T>
     ) => Promise<number>;
 }
 
 export const count = async <T>(
-    client: Client,
     model: T,
+    client: Client,
     filter?: FilterCallable<T>
 ) => {
     const query = e.select(model, (m: any) => ({
@@ -233,17 +233,17 @@ export const count = async <T>(
 
 export interface $RenderExists extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>
+        const T extends $expr_PathNode
     >(
-        client: Client,
         model: T,
+        client: Client,
         filter?: FilterCallable<T>
     ) => Promise<boolean>;
 }
 
 export const exists = async <T>(
-    client: Client,
     model: T,
+    client: Client,
     filter?: FilterCallable<T>
 ) => {
     const query = e.select(model, (m: any) => ({

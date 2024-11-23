@@ -6,19 +6,19 @@ import e from '../generated/syntax';
 
 export interface $RenderSum extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
+        const T extends $expr_PathNode,
         Field extends NumericFields<T>
     >(
+        x: T,
         client: Client,
-        model: T,
         field: Field,
         filter?: FilterCallable<T>
     ) => Promise<number | null>;
 }
 
 export const sum = async <T, Field extends NumericFields<T>>(
-    client: Client,
     model: T,
+    client: Client,
     field: Field,
     filter?: FilterCallable<T>
 ) => {
@@ -29,19 +29,19 @@ export const sum = async <T, Field extends NumericFields<T>>(
 
 export interface $RenderMin extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
+        const T extends $expr_PathNode,
         Field extends NumericFields<T>
     >(
+        x: T,
         client: Client,
-        model: T,
         field: Field,
         filter?: FilterCallable<T>
     ) => Promise<number | null>;
 }
 
 export const min = async <T, Field extends NumericFields<T>>(
-    client: Client,
     model: T,
+    client: Client,
     field: Field,
     filter?: FilterCallable<T>
 ) => {
@@ -52,19 +52,19 @@ export const min = async <T, Field extends NumericFields<T>>(
 
 export interface $RenderMax extends HKOperation {
     new: (x: Coerce<this["_1"], unknown>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>,
+        const T extends $expr_PathNode,
         Field extends NumericFields<T>
     >(
+        x: T,
         client: Client,
-        model: T,
         field: Field,
         filter?: FilterCallable<T>
     ) => Promise<number | null>;
 }
 
 export const max = async <T, Field extends NumericFields<T>>(
-    client: Client,
     model: T,
+    client: Client,
     field: Field,
     filter?: FilterCallable<T>
 ) => {

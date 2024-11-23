@@ -7,10 +7,10 @@ import e from '../generated/syntax';
 
 export interface $RenderInsertSingle extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>
+        const T extends $expr_PathNode
     >(
+        x: T,
         client: Client,
-        model: T & $expr_PathNode,
         data: InsertShape<ModelTypeSet<T>['__element__']>
     ) => Promise<Exclude<ModelIdentity, null>>;
 }
@@ -27,10 +27,10 @@ export const insert = async <T>(
 
 export interface $RenderInsertMultiple extends HKOperation {
     new: (x: Coerce<this["_1"], $expr_PathNode>) => <
-        const T extends Coerce<this["_1"], $expr_PathNode>
+        const T extends $expr_PathNode
     >(
+        x: T,
         client: Client,
-        model: T,
         data: InsertShape<ModelTypeSet<T>['__element__']>[]
     ) => Promise<Exclude<ModelIdentity, null>[]>;
 }
