@@ -1,5 +1,5 @@
 import { Client } from "edgedb";
-import { EntityManager, NarrowEntityManager } from "./entity-manager";
+import { NarrowEntityManager } from "./entity-manager";
 import { $expr_PathNode } from './generated/syntax/path';
 import { objectTypeToSelectShape } from "./generated/syntax/select";
 import { ModelTypeSet, ModelScope, FilterCallable, NumericFields } from "./operations/types";
