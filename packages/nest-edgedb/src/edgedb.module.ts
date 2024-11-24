@@ -1,31 +1,28 @@
 import { Module, Global, DynamicModule, Provider } from '@nestjs/common';
-import { createClient } from 'edgedb';
-
-export const EDGE_DB_CLIENT = 'EDGE_DB_CLIENT';
-
-export type CreateClientOptions = Parameters<typeof createClient>[0];
+import { createClient, Client } from 'edgedb';
+import { EDGE_DB_CLIENT } from './constants';
+import { EdgeDbClientProvider } from './providers';
 
 @Global()
 @Module({})
 export class EdgeDBModule {
-  static forRoot(options?: CreateClientOptions): DynamicModule {
-    const clientProvider: Provider = {
-      provide: EDGE_DB_CLIENT,
-      useFactory: () => createClient(options),
-    };
-
+  static forRoot(options?: Parameters<typeof createClient>[0]): DynamicModule {
     return {
       module: EdgeDBModule,
-      providers: [clientProvider],
-      exports: [clientProvider],
+      providers: [
+        EdgeDbClientProvider,
+      ],
+      exports: [
+        EdgeDbClientProvider,
+      ],
     };
   }
 
   static forRootAsync(options: {
-    useFactory: (...args: any[]) => Promise<CreateClientOptions> | CreateClientOptions;
+    useFactory: (...args: any[]) => Promise<Parameters<typeof createClient>[0]> | Parameters<typeof createClient>[0];
     inject?: any[];
   }): DynamicModule {
-    const clientProvider: Provider = {
+    const asyncClientProvider: Provider = {
       provide: EDGE_DB_CLIENT,
       useFactory: async (...args: any[]) => {
         const config = await options.useFactory(...args);
@@ -36,8 +33,12 @@ export class EdgeDBModule {
 
     return {
       module: EdgeDBModule,
-      providers: [clientProvider],
-      exports: [clientProvider],
+      providers: [
+        asyncClientProvider,
+      ],
+      exports: [
+        asyncClientProvider,
+      ],
     };
   }
 }

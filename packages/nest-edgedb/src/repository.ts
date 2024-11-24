@@ -9,12 +9,18 @@ import { $scopify } from "./generated/syntax/typesystem";
 import { SimpleGroupElements } from "./operations/group";
 
 export class Repository<T extends $expr_PathNode> {
-    private em: NarrowEntityManager<T>;
+    private readonly model: T;
+    private readonly em: NarrowEntityManager<T>;
+    private readonly client: Client;
+
     constructor(
-        private readonly model: T,
-        private readonly client: Client
+        model: T,
+        em: NarrowEntityManager<T>,
+        client: Client
     ) {
-        this.em = new EntityManager<[T]>();
+        this.model = model;
+        this.em = em;
+        this.client = client;
     }
 
     findOneByIdWithProjection =
@@ -88,4 +94,8 @@ export class Repository<T extends $expr_PathNode> {
     exists = async (filter?: FilterCallable<T>) => {
         return await this.em.exists(this.model, this.client, filter);
     };
+}
+
+export function createRepository(model: $expr_PathNode, em: NarrowEntityManager<$expr_PathNode>, client: Client) {
+    return new Repository(model, em, client);
 }
